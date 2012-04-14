@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Resistor Tool</string>
+    <string name="app_name_pro">Resistor Tool Pro</string>
+    <string name="blank"></string>
+    <string name="unit">Units</string>
+    <string name="decimal">Decimal Place</string>
+    <string name="enter">Calculate</string>
+    <string name="viewCustomList">View Custom List</string>
+    <string name="removeAll">Remove All</string>
+    <string name="next">Next</string>
+    <string name="first">1st</string>
+    <string name="second">2nd</string>
+    <string name="third">3rd</string>
+    <string name="fourth">4th</string>
+    <string name="tolerance">Tolerance</string>
+    <string name="value">Value</string>
+    <string name="icon">Icon</string>
+
+    <color name="White">#ffffffff</color>
+    <color name="Red">#ffff0000</color>
+    <color name="Orange">#ffff8c00</color>
+    <color name="Black">#ff000000</color>
+    <color name="Brown">#ff8b4513</color>
+    <color name="Yellow">#ffffff00</color>
+    <color name="Green">#ff228b22</color>
+    <color name="Blue">#ff0000ff</color>
+    <color name="Violet">#ff9400d3</color>
+    <color name="Gold">#ffc79316</color>
+    <color name="Grey">#ffC0C0C0</color>
+    <color name="Silver">#ffE6E8FA</color>
+
+</resources>

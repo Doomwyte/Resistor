@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/mode4" android:title="4 Band Mode"></item>
+	<item android:id="@+id/mode5" android:title="5 Band Mode"></item>
+	<item android:id="@+id/pro" android:title="Purchase Ad-Free Version"></item>
+	<item android:id="@+id/rate" android:title="Rate this App"></item>
+</menu>

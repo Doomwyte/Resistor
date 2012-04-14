@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainRoot"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/heading_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:padding="5dip" >
+
+        <ImageView
+            android:id="@+id/header_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:maxHeight="50dip"
+            android:maxWidth="50dip"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/icon"
+            android:src="@drawable/icon" >
+        </ImageView>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/header_logo"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@color/Black"
+            android:textSize="35dip" >
+        </TextView>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/modeText"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/heading_bar"
+        android:background="@color/Green"
+        android:gravity="center"
+        android:text="@string/app_name" 
+        android:textColor="@color/White">
+    </TextView>
+
+    <RelativeLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/modeText"
+        android:gravity="center_horizontal"
+        android:padding="20dip" >
+
+        <ListView
+            android:id="@+id/mainlist1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+    </RelativeLayout>
+
+</RelativeLayout>
