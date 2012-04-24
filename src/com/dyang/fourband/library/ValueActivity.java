@@ -645,7 +645,8 @@ public class ValueActivity extends Activity implements OnClickListener {
 
 			try {
 				if (mExternalStorageAvailable && mExternalStorageWriteable) {
-					File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.dyang.fourband/files");
+					File dir = new File(Environment.getExternalStorageDirectory().getPath()
+							+ "/Android/data/com.dyang.fourband/files");
 					if (!dir.exists())
 						dir.mkdirs();
 
@@ -697,10 +698,14 @@ public class ValueActivity extends Activity implements OnClickListener {
 	}
 
 	public Double adjustDouble(double input, int decimalPlaces) {
-		DecimalFormat df = new DecimalFormat();
-		df.setMaximumFractionDigits(decimalPlaces);
-		df.setGroupingUsed(false);
-		return Double.parseDouble(df.format(input));
+		try {
+			DecimalFormat df = new DecimalFormat();
+			df.setMaximumFractionDigits(decimalPlaces);
+			df.setGroupingUsed(false);
+			return Double.parseDouble(df.format(input));
+		} catch (NumberFormatException nfe) {
+			return input;
+		}
 	}
 
 	@Override
@@ -737,7 +742,8 @@ public class ValueActivity extends Activity implements OnClickListener {
 		}
 
 		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.dyang.fourband/files");
+			File dir = new File(Environment.getExternalStorageDirectory().getPath()
+					+ "/Android/data/com.dyang.fourband/files");
 
 			if (!dir.exists())
 				dir.mkdirs();

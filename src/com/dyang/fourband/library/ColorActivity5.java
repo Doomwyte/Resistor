@@ -38,7 +38,7 @@ import android.widget.Toast;
 public class ColorActivity5 extends Activity {
 
 	private Spinner firstSpinner, secondSpinner, thirdSpinner, multiplierSpinner, toleranceSpinner, unitSpinner,
-	decimalSpinner;
+			decimalSpinner;
 
 	private TextView resultText, toleranceText, minmaxText;
 
@@ -202,7 +202,8 @@ public class ColorActivity5 extends Activity {
 
 				try {
 					if (mExternalStorageAvailable && mExternalStorageWriteable) {
-						File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.dyang.fourband/files");
+						File dir = new File(Environment.getExternalStorageDirectory().getPath()
+								+ "/Android/data/com.dyang.fourband/files");
 						if (!dir.exists())
 							dir.mkdirs();
 
@@ -224,7 +225,7 @@ public class ColorActivity5 extends Activity {
 								e.printStackTrace();
 							}
 						}
-						
+
 						FileOutputStream fOut = new FileOutputStream(file);
 						String output = text + Integer.toString(count) + ":"
 								+ ((RowDm) firstSpinner.getSelectedItem()).getLabel() + ":"
@@ -343,7 +344,7 @@ public class ColorActivity5 extends Activity {
 			// Nothing
 		}
 	}
-	
+
 	public String adjustDouble(double input, int decimalPlaces) {
 		DecimalFormat df = new DecimalFormat();
 		df.setMaximumFractionDigits(decimalPlaces);
@@ -385,7 +386,8 @@ public class ColorActivity5 extends Activity {
 		}
 
 		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.dyang.fourband/files");
+			File dir = new File(Environment.getExternalStorageDirectory().getPath()
+					+ "/Android/data/com.dyang.fourband/files");
 
 			if (!dir.exists())
 				dir.mkdirs();

@@ -524,7 +524,7 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | "
 							+ infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
 					viewInfo.setTextColor(Color.BLACK);
-					
+
 					trInfo.addView(viewInfo);
 
 					tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue
@@ -647,7 +647,7 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | "
 							+ infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
 					viewInfo.setTextColor(Color.BLACK);
-					
+
 					trInfo.addView(viewInfo);
 
 					tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue
@@ -700,7 +700,8 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 
 			try {
 				if (mExternalStorageAvailable && mExternalStorageWriteable) {
-					File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.dyang.fourband/files");
+					File dir = new File(Environment.getExternalStorageDirectory().getPath()
+							+ "/Android/data/com.dyang.fourband/files");
 					if (!dir.exists())
 						dir.mkdirs();
 
@@ -753,10 +754,14 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 	}
 
 	public Double adjustDouble(double input, int decimalPlaces) {
-		DecimalFormat df = new DecimalFormat();
-		df.setMaximumFractionDigits(decimalPlaces);
-		df.setGroupingUsed(false);
-		return Double.parseDouble(df.format(input));
+		try {
+			DecimalFormat df = new DecimalFormat();
+			df.setMaximumFractionDigits(decimalPlaces);
+			df.setGroupingUsed(false);
+			return Double.parseDouble(df.format(input));
+		} catch (NumberFormatException nfe) {
+			return input;
+		}
 	}
 
 	@Override
@@ -793,7 +798,8 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 		}
 
 		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.dyang.fourband/files");
+			File dir = new File(Environment.getExternalStorageDirectory().getPath()
+					+ "/Android/data/com.dyang.fourband/files");
 
 			if (!dir.exists())
 				dir.mkdirs();
