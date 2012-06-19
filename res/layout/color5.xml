@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/colorLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal" >
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/colorSelection"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dip" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/spinner1"
+            android:text="@string/first"
+            android:textColor="@color/Black" />
+
+        <Spinner
+            android:id="@+id/spinner1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView1" >
+        </Spinner>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/spinner2"
+            android:layout_toRightOf="@id/textView1"
+            android:text="@string/second"
+            android:textColor="@color/Black" />
+
+        <Spinner
+            android:id="@+id/spinner2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView2"
+            android:layout_toRightOf="@+id/spinner1" >
+        </Spinner>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/spinner3"
+            android:layout_toRightOf="@id/textView2"
+            android:text="@string/third"
+            android:textColor="@color/Black" />
+
+        <Spinner
+            android:id="@+id/spinner3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView3"
+            android:layout_toRightOf="@+id/spinner2" >
+        </Spinner>
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/spinner7"
+            android:layout_toRightOf="@+id/textView3"
+            android:text="@string/fourth"
+            android:textColor="@color/Black" >
+        </TextView>
+
+        <Spinner
+            android:id="@+id/spinner7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView6"
+            android:layout_toRightOf="@+id/spinner3" >
+        </Spinner>
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/spinner4"
+            android:layout_below="@+id/spinner1"
+            android:text="@string/tolerance"
+            android:textColor="@color/Black" >
+        </TextView>
+
+        <Spinner
+            android:id="@+id/spinner4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView4" >
+        </Spinner>
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/spinner5"
+            android:layout_alignTop="@+id/textView4"
+            android:layout_toRightOf="@+id/textView4"
+            android:text="@string/unit"
+            android:textColor="@color/Black" >
+        </TextView>
+
+        <Spinner
+            android:id="@+id/spinner5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView5"
+            android:layout_toRightOf="@+id/spinner4" >
+        </Spinner>
+
+        <TextView
+            android:id="@+id/decimalText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/spinner6"
+            android:layout_alignTop="@+id/textView5"
+            android:layout_toRightOf="@+id/textView5"
+            android:text="@string/decimal"
+            android:textColor="@color/Black" >
+        </TextView>
+
+        <Spinner
+            android:id="@+id/spinner6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/decimalText"
+            android:layout_toRightOf="@+id/spinner5" >
+        </Spinner>
+    </RelativeLayout>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/colorResult"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/colorSelection"
+        android:layout_gravity="center_horizontal" >
+
+        <TableRow
+            android:id="@+id/colorImage"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/spinner5"
+            android:layout_margin="5dip"
+            android:background="@drawable/resistor" >
+        </TableRow>
+
+        <TextView
+            android:id="@+id/resultText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/colorImage"
+            android:layout_alignRight="@+id/colorImage"
+            android:layout_below="@+id/colorImage"
+            android:gravity="center"
+            android:text="@string/blank"
+            android:textColor="@color/Black" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/toleranceText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/resultText"
+            android:layout_alignRight="@+id/resultText"
+            android:layout_below="@+id/resultText"
+            android:gravity="center"
+            android:text="@string/blank"
+            android:textColor="@color/Black" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/minmaxText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/toleranceText"
+            android:layout_alignRight="@+id/toleranceText"
+            android:layout_below="@+id/toleranceText"
+            android:gravity="center"
+            android:text="@string/blank"
+            android:textColor="@color/Black" >
+        </TextView>
+    </RelativeLayout>
+
+</RelativeLayout>
