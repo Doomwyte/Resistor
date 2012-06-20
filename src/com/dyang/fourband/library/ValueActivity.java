@@ -448,7 +448,7 @@ public class ValueActivity extends Activity implements OnClickListener {
 					UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
 					Double resistValue = low_queue.get(i).getResisVal() / selectedUnit.getMultiple();
 					resistValue = adjustDouble(resistValue, 3);
-					if (resistValue == -1.0)
+					if (resistValue.equals(-1.0))
 						return;
 					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | "
 							+ infoText[1] + " | " + infoText[2] + " | " + infoText[3]);
@@ -566,7 +566,7 @@ public class ValueActivity extends Activity implements OnClickListener {
 					UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
 					Double resistValue = high_queue.get(i).getResisVal() / selectedUnit.getMultiple();
 					resistValue = adjustDouble(resistValue, 3);
-					if (resistValue == -1.0)
+					if (resistValue.equals(-1.0))
 						return;
 					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | "
 							+ infoText[1] + " | " + infoText[2] + " | " + infoText[3]);
@@ -676,7 +676,7 @@ public class ValueActivity extends Activity implements OnClickListener {
 			DecimalFormat df = new DecimalFormat();
 			df.setMaximumFractionDigits(decimalPlaces);
 			df.setGroupingUsed(false);
-			double rValue  = Double.parseDouble(df.format(input));
+			double rValue = Double.parseDouble(df.format(input));
 			return rValue;
 		} catch (NumberFormatException nfe) {
 			showAlert("Please input a numeric-only value.");
