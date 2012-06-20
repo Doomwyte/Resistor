@@ -13,7 +13,7 @@
         <activity android:name=".ValueActivity" />
         <activity android:name=".ValueActivity5" />
         <activity android:name=".ListActivity" />
-        <activity android:name=".library.HelpActivity" />
+        <activity android:name=".HelpActivity" />
     </application>
 
 </manifest>

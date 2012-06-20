@@ -164,49 +164,19 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 				String input_String = valueText.getText().toString();
 				input = Double.parseDouble(input_String);
 			} catch (NumberFormatException nfe) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage("Please enter a valid value.").setCancelable(false)
-						.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								valueText.setText("");
-								dialog.cancel();
-								return;
-							}
-						});
-				AlertDialog alert = builder.create();
-				alert.show();
+				showAlert("Please enter a valid value.");
 				return;
 			}
 			input *= ((UnitDm) valueUnit.getSelectedItem()).getMultiple();
 		}
 
 		if (input < 1) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Please enter a valid value.").setCancelable(false)
-					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							valueText.setText("");
-							dialog.cancel();
-							return;
-						}
-					});
-			AlertDialog alert = builder.create();
-			alert.show();
+			showAlert("Please enter a valid value.");
 			return;
 		}
 
 		if (input > 118800000000.0) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Please enter a smaller number").setCancelable(false)
-					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							valueText.setText("");
-							dialog.cancel();
-							return;
-						}
-					});
-			AlertDialog alert = builder.create();
-			alert.show();
+			showAlert("Please enter a smaller value.");
 			return;
 		}
 
@@ -521,6 +491,8 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
 					Double resistValue = low_queue.get(i).getResisVal() / selectedUnit.getMultiple();
 					resistValue = adjustDouble(resistValue, 3);
+					if (resistValue == -1.0)
+						return;
 					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | "
 							+ infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
 					viewInfo.setTextColor(Color.BLACK);
@@ -644,6 +616,8 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
 					Double resistValue = high_queue.get(i).getResisVal() / selectedUnit.getMultiple();
 					resistValue = adjustDouble(resistValue, 3);
+					if (resistValue == -1.0)
+						return;
 					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | "
 							+ infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
 					viewInfo.setTextColor(Color.BLACK);
@@ -758,10 +732,26 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 			DecimalFormat df = new DecimalFormat();
 			df.setMaximumFractionDigits(decimalPlaces);
 			df.setGroupingUsed(false);
-			return Double.parseDouble(df.format(input));
+			double rValue  = Double.parseDouble(df.format(input));
+			return rValue;
 		} catch (NumberFormatException nfe) {
-			return input;
+			showAlert("Please enter a numeric-only value.");
+			return -1.0;
 		}
+	}
+	
+	public void showAlert(String msg) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(msg).setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				valueText.setText("");
+				dialog.cancel();
+				return;
+			}
+		});
+		AlertDialog alert = builder.create();
+		alert.show();
+		return;
 	}
 
 	@Override
