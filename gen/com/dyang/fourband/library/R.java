@@ -105,21 +105,20 @@ public final class R {
     }
     public static final class string {
         public static int app_name=0x7f040000;
-        public static int app_name_pro=0x7f040001;
-        public static int blank=0x7f040002;
-        public static int decimal=0x7f040004;
-        public static int enter=0x7f040005;
-        public static int first=0x7f040009;
-        public static int fourth=0x7f04000c;
-        public static int icon=0x7f04000f;
-        public static int next=0x7f040008;
-        public static int removeAll=0x7f040007;
-        public static int second=0x7f04000a;
-        public static int third=0x7f04000b;
-        public static int tolerance=0x7f04000d;
-        public static int unit=0x7f040003;
-        public static int value=0x7f04000e;
-        public static int viewCustomList=0x7f040006;
+        public static int blank=0x7f040001;
+        public static int decimal=0x7f040003;
+        public static int enter=0x7f040004;
+        public static int first=0x7f040008;
+        public static int fourth=0x7f04000b;
+        public static int icon=0x7f04000e;
+        public static int next=0x7f040007;
+        public static int removeAll=0x7f040006;
+        public static int second=0x7f040009;
+        public static int third=0x7f04000a;
+        public static int tolerance=0x7f04000c;
+        public static int unit=0x7f040002;
+        public static int value=0x7f04000d;
+        public static int viewCustomList=0x7f040005;
     }
     public static final class style {
         public static int Theme_Background=0x7f060000;

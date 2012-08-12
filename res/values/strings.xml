@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Resistor Tool</string>
-    <string name="app_name_pro">Resistor Tool Pro</string>
     <string name="blank"></string>
     <string name="unit">Units</string>
     <string name="decimal">Decimal Place</string>
