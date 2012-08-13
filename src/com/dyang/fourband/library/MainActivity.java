@@ -228,8 +228,6 @@ public class MainActivity extends Activity {
 			updateMode("5", "update");
 		} else if (item.getItemId() == R.id.rate) {
 			this.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PACKAGE_NAME)));
-		} else if (item.getItemId() == R.id.pro) {
-			this.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PACKAGE_NAME + "Pro")));
 		}
 		return true;
 	}

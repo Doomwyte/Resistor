@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Resistor Tool Pro</string>
+    <string name="app_name">Resistor Tool</string>
     <string name="blank"></string>
     <string name="unit">Units</string>
     <string name="decimal">Decimal Place</string>

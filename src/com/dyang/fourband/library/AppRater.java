@@ -62,8 +62,8 @@ public class AppRater {
 		TextView tv = new TextView(mContext);
 		tv.setText("If " + APP_TITLE
 				+ " has helped you in any way, please take a moment to rate it. Thanks for your support!");
-		tv.setWidth(240);
-		tv.setPadding(4, 0, 4, 10);
+		tv.setWidth(250);
+		tv.setPadding(8, 0, 8, 0);
 		ll.addView(tv);
 
 		Button b1 = new Button(mContext);
