@@ -11,7 +11,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dip"
-        android:gravity="fill_horizontal" >
+        android:gravity="fill_horizontal"
+        android:textIsSelectable="false" >
     </TextView>
 
     <ImageView

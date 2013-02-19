@@ -1,4 +1,4 @@
-package com.dyang.fourband.library;
+package com.dyang.fourband;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -310,6 +311,18 @@ public class MainActivity extends Activity {
 				modeText.setBackgroundResource(R.color.Green);
 			else
 				modeText.setBackgroundResource(R.color.Orange);
+			
+			modeText.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+					if (mode.equals("4")) {
+						updateMode("5", "update");
+					} else if (mode.equals("5")) {
+						updateMode("4", "update");
+					}
+				}
+			});
+			
 		} catch (NullPointerException npe) {
 			return;
 		}

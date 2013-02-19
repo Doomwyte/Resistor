@@ -1,4 +1,4 @@
-package com.dyang.fourband.library;
+package com.dyang.fourband;
 
 import android.app.Activity;
 import android.content.Intent;

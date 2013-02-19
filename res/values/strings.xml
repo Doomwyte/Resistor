@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Resistor Tool</string>
+    <string name="app_name">Resistor Tool Pro</string>
+    <string name="app_name_without_pro">Resistor Tool</string>
     <string name="blank"></string>
     <string name="unit">Units</string>
     <string name="decimal">Decimal Place</string>
@@ -16,6 +17,9 @@
     <string name="tolerance">Tolerance</string>
     <string name="value">Value</string>
     <string name="icon">Icon</string>
+    <string name="fourBandMode">4 Band Mode</string>
+    <string name="fiveBandMode">5 Band Mode</string>
+    <string name="rateThisApp">Rate This App</string>
 
     <color name="White">#ffffffff</color>
     <color name="Red">#ffff0000</color>

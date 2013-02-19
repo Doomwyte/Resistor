@@ -1,4 +1,4 @@
-package com.dyang.fourband.library;
+package com.dyang.fourband;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -108,13 +109,12 @@ public class ListActivity extends Activity {
 					tr.setBackgroundResource(R.drawable.resistor);
 
 					// Define layout params
-					LayoutParams preEndLayout = new LayoutParams(90, 100);
+					LayoutParams preEndLayout = new LayoutParams(150, 100);
 
-					LayoutParams rowLayout = new LayoutParams(13, 100);
-					rowLayout.topMargin = 8;
-					rowLayout.bottomMargin = 8;
-					rowLayout.leftMargin = 13;
-					rowLayout.rightMargin = 13;
+					int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
+					LayoutParams rowLayout = new LayoutParams(13, px);
+					rowLayout.leftMargin = 15;
+					rowLayout.rightMargin = 15;
 
 					LayoutParams seperator = new LayoutParams();
 					seperator.height = 1;

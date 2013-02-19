@@ -1,4 +1,4 @@
-package com.dyang.fourband.library;
+package com.dyang.fourband;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -63,7 +63,7 @@ public class AppRater {
 		tv.setText("If " + APP_TITLE
 				+ " has helped you in any way, please take a moment to rate it. Thanks for your support!");
 		tv.setWidth(250);
-		tv.setPadding(8, 0, 8, 0);
+		tv.setPadding(8, 0, 8, 30);
 		ll.addView(tv);
 
 		Button b1 = new Button(mContext);
