@@ -41,5 +41,4 @@
         <activity android:name="com.dyang.fourband.HelpActivity" >
         </activity>
     </application>
-
 </manifest>
