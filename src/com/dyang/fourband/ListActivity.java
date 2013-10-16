@@ -112,9 +112,10 @@ public class ListActivity extends Activity {
 					LayoutParams preEndLayout = new LayoutParams(150, 100);
 
 					int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
-					LayoutParams rowLayout = new LayoutParams(13, px);
-					rowLayout.leftMargin = 15;
-					rowLayout.rightMargin = 15;
+					int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
+					LayoutParams rowLayout = new LayoutParams(width, px);
+					rowLayout.leftMargin = width;
+					rowLayout.rightMargin = width;
 
 					LayoutParams seperator = new LayoutParams();
 					seperator.height = 1;

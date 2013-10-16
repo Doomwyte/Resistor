@@ -134,14 +134,11 @@ public class ColorActivity extends Activity {
 
 		// Initiate Customized Adapter
 		GenericAdapter firstBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item, firstBand);
-		GenericAdapter secondBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item,
-				secondBand);
+		GenericAdapter secondBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item, secondBand);
 		GenericAdapter thirdBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item, thirdBand);
-		GenericAdapter toleranceBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item,
-				toleranceBand);
+		GenericAdapter toleranceBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item, toleranceBand);
 		UnitAdapter unitsAdapter = new UnitAdapter(this, R.layout.my_simple_spinner_dropdown_item, units);
-		DecimalAdapter decimalAdapter = new DecimalAdapter(this, R.layout.my_simple_spinner_dropdown_item,
-				decimalPlaces);
+		DecimalAdapter decimalAdapter = new DecimalAdapter(this, R.layout.my_simple_spinner_dropdown_item, decimalPlaces);
 
 		// Attach object to adapter
 		firstSpinner.setAdapter(firstBandAdapter);
@@ -185,7 +182,7 @@ public class ColorActivity extends Activity {
 
 				try {
 					if (mExternalStorageAvailable && mExternalStorageWriteable) {
-						File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.dyang.fourband/files");
+						File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
 						if (!dir.exists())
 							dir.mkdirs();
 
@@ -207,15 +204,12 @@ public class ColorActivity extends Activity {
 								e.printStackTrace();
 							}
 						}
-						
+
 						FileOutputStream fOut = new FileOutputStream(file);
-						String output = text + Integer.toString(count) + ":"
-								+ ((RowDm) firstSpinner.getSelectedItem()).getLabel() + ":"
-								+ ((RowDm) secondSpinner.getSelectedItem()).getLabel() + ":"
-								+ ((RowDm) thirdSpinner.getSelectedItem()).getLabel() + ":"
-								+ ((RowDm) toleranceSpinner.getSelectedItem()).getLabel() + ":"
-								+ "Val" + resultText.getText() + ";\n";
+						String output = text + Integer.toString(count) + ":" + ((RowDm) firstSpinner.getSelectedItem()).getLabel() + ":" + ((RowDm) secondSpinner.getSelectedItem()).getLabel() + ":"
+								+ ((RowDm) thirdSpinner.getSelectedItem()).getLabel() + ":" + ((RowDm) toleranceSpinner.getSelectedItem()).getLabel() + ":" + "Val" + resultText.getText() + ";\n";
 						fOut.write(output.getBytes());
+						fOut.close();
 
 						Context context = getApplicationContext();
 						CharSequence toastText = "Added to custom list";
@@ -246,10 +240,11 @@ public class ColorActivity extends Activity {
 		colorImage.removeAllViews();
 
 		// Define layout params
-		int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
-		LayoutParams rowLayout = new LayoutParams(13, px);
-		rowLayout.leftMargin = 20;
-		rowLayout.rightMargin = 20;
+		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
+		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
+		LayoutParams rowLayout = new LayoutParams(width, px);
+		rowLayout.leftMargin = width;
+		rowLayout.rightMargin = width;
 
 		/* Create a textview to be the row-content */
 		TextView view1 = new TextView(this);
@@ -299,10 +294,8 @@ public class ColorActivity extends Activity {
 			String unitSign = ((UnitDm) unitSpinner.getSelectedItem()).getLabel();
 			Integer decimalPlaces = Integer.valueOf(decimalSpinner.getSelectedItem().toString());
 			resultText.setText(adjustDouble(resultOhm, decimalPlaces) + " " + unitSign);
-			toleranceText.setText("Tolerance: " + toleranceDigit + "%" + " (" + adjustDouble(range, decimalPlaces)
-					+ " " + unitSign + ")");
-			minmaxText.setText("Range: " + adjustDouble(downRange, decimalPlaces) + " ~ "
-					+ adjustDouble(upRange, decimalPlaces) + " " + unitSign);
+			toleranceText.setText("Tolerance: " + toleranceDigit + "%" + " (" + adjustDouble(range, decimalPlaces) + " " + unitSign + ")");
+			minmaxText.setText("Range: " + adjustDouble(downRange, decimalPlaces) + " ~ " + adjustDouble(upRange, decimalPlaces) + " " + unitSign);
 			resultText.setTextSize(40);
 			resultText.setTypeface(null, Typeface.BOLD);
 			toleranceText.setTextSize(20);
@@ -325,7 +318,7 @@ public class ColorActivity extends Activity {
 		input = input / ((UnitDm) unitSpinner.getSelectedItem()).getMultiple();
 		return df.format(input);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -360,7 +353,7 @@ public class ColorActivity extends Activity {
 		}
 
 		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Android/data/com.dyang.fourband/files");
+			File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
 
 			if (!dir.exists())
 				dir.mkdirs();

@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.Properties;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -18,6 +17,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,9 +31,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
-	String[] mainMenu = { "Find Value By Color", "Find Color By Value", "View Custom List", "Help" };
+	String[] mainMenu = { "Find Value By Color", "Find Color By Value", "View Custom List", "Help", "Rate This App" };
 
 	String mode;
 
@@ -76,6 +76,8 @@ public class MainActivity extends Activity {
 				} else if (arg3 == 3) {
 					Intent myIntent = new Intent(MainActivity.this, HelpActivity.class);
 					MainActivity.this.startActivity(myIntent);
+				} else if (arg3 == 4) {
+					MainActivity.this.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PACKAGE_NAME)));
 				}
 			}
 		});
@@ -83,8 +85,7 @@ public class MainActivity extends Activity {
 		init();
 
 		PACKAGE_NAME = getApplicationContext().getPackageName();
-		APP_NAME = getApplicationContext().getPackageManager()
-				.getApplicationLabel(getApplicationContext().getApplicationInfo()).toString();
+		APP_NAME = getApplicationContext().getPackageManager().getApplicationLabel(getApplicationContext().getApplicationInfo()).toString();
 		AppRater.app_launched(this, PACKAGE_NAME, APP_NAME);
 	}
 
@@ -110,8 +111,7 @@ public class MainActivity extends Activity {
 		}
 
 		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath()
-					+ "/Android/data/com.dyang.fourband/files");
+			File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
 
 			if (!dir.exists())
 				dir.mkdirs();
@@ -176,8 +176,7 @@ public class MainActivity extends Activity {
 							double resistance = Integer.parseInt(first + second) * third;
 							resistance /= 1000;
 							resistance = adjustDouble(resistance, 3);
-							output.append(counter++ + ":" + colorTable[0] + ":" + colorTable[1] + ":" + colorTable[2]
-									+ ":" + colorTable[3] + ":Val" + resistance + " k£[;\n");
+							output.append(counter++ + ":" + colorTable[0] + ":" + colorTable[1] + ":" + colorTable[2] + ":" + colorTable[3] + ":Val" + resistance + " k£[;\n");
 						}
 						// 5 Band
 						else if (subSets.length == 6) {
@@ -191,8 +190,7 @@ public class MainActivity extends Activity {
 							double resistance = Integer.parseInt(first + second + third) * fourth;
 							resistance /= 1000;
 							resistance = adjustDouble(resistance, 3);
-							output.append(counter++ + ":" + colorTable[0] + ":" + colorTable[1] + ":" + colorTable[2]
-									+ ":" + colorTable[3] + ":" + colorTable[4] + ":Val" + resistance + " k£[;\n");
+							output.append(counter++ + ":" + colorTable[0] + ":" + colorTable[1] + ":" + colorTable[2] + ":" + colorTable[3] + ":" + colorTable[4] + ":Val" + resistance + " k£[;\n");
 						}
 					} catch (NullPointerException e) {
 						e.printStackTrace();
@@ -227,8 +225,6 @@ public class MainActivity extends Activity {
 			updateMode("4", "update");
 		} else if (item.getItemId() == R.id.mode5) {
 			updateMode("5", "update");
-		} else if (item.getItemId() == R.id.rate) {
-			this.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PACKAGE_NAME)));
 		}
 		return true;
 	}
@@ -251,8 +247,7 @@ public class MainActivity extends Activity {
 			modeText = (TextView) findViewById(R.id.modeText);
 
 			if (mExternalStorageWriteable && mExternalStorageAvailable) {
-				File dir = new File(Environment.getExternalStorageDirectory().getPath()
-						+ "/Android/data/com.dyang.fourband/files");
+				File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
 
 				if (!dir.exists())
 					dir.mkdirs();
@@ -266,6 +261,7 @@ public class MainActivity extends Activity {
 							FileOutputStream fOut = new FileOutputStream(file);
 							String output = input;
 							fOut.write(output.getBytes());
+							fOut.close();
 							mode = input;
 							modeText.setText(mode + " Band Mode");
 						} else {
@@ -282,12 +278,14 @@ public class MainActivity extends Activity {
 							FileOutputStream fOut = new FileOutputStream(file);
 							String output = input;
 							fOut.write(output.getBytes());
+							fOut.close();
 							mode = input;
 							modeText.setText(mode + " Band Mode");
 						} else {
 							FileOutputStream fOut = new FileOutputStream(file);
 							String output = "4";
 							fOut.write(output.getBytes());
+							fOut.close();
 							mode = "4";
 							modeText.setText(mode + " Band Mode");
 						}
@@ -311,8 +309,8 @@ public class MainActivity extends Activity {
 				modeText.setBackgroundResource(R.color.Green);
 			else
 				modeText.setBackgroundResource(R.color.Orange);
-			
-			modeText.setOnClickListener(new OnClickListener(){
+
+			modeText.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
 					if (mode.equals("4")) {
@@ -322,7 +320,7 @@ public class MainActivity extends Activity {
 					}
 				}
 			});
-			
+
 		} catch (NullPointerException npe) {
 			return;
 		}

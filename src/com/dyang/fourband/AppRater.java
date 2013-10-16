@@ -1,12 +1,18 @@
 package com.dyang.fourband;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,13 +24,15 @@ public class AppRater {
 	private final static int DAYS_UNTIL_PROMPT = 0;
 	private final static int LAUNCHES_UNTIL_PROMPT = 3;
 
+	static Dialog dialog = null;
+
 	public static void app_launched(Context mContext, String PACKAGE_NAME, String APP_NAME) {
-		
+
 		APP_PNAME = PACKAGE_NAME;
 		APP_TITLE = APP_NAME;
-		
+
 		SharedPreferences prefs = mContext.getSharedPreferences("apprater", 0);
-		
+
 		if (prefs.getBoolean("dontshowagain", false)) {
 			return;
 		}
@@ -53,56 +61,32 @@ public class AppRater {
 	}
 
 	public static void showRateDialog(final Context mContext, final SharedPreferences.Editor editor) {
-		final Dialog dialog = new Dialog(mContext);
-		dialog.setTitle("Rate " + APP_TITLE);
-
-		LinearLayout ll = new LinearLayout(mContext);
-		ll.setOrientation(LinearLayout.VERTICAL);
-
-		TextView tv = new TextView(mContext);
-		tv.setText("If " + APP_TITLE
-				+ " has helped you in any way, please take a moment to rate it. Thanks for your support!");
-		tv.setWidth(250);
-		tv.setPadding(8, 0, 8, 30);
-		ll.addView(tv);
-
-		Button b1 = new Button(mContext);
-		b1.setText("Rate " + APP_TITLE);
-		b1.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {				
-				if (editor != null) {
-					editor.putBoolean("dontshowagain", true);
-					editor.commit();
-				}
-				mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + APP_PNAME)));
-				dialog.dismiss();
-			}
-		});
-		ll.addView(b1);
-
-		Button b2 = new Button(mContext);
-		b2.setText("Remind me later");
-		b2.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				dialog.dismiss();
-			}
-		});
-		ll.addView(b2);
-
-		Button b3 = new Button(mContext);
-		b3.setText("No, thanks");
-		b3.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				if (editor != null) {
-					editor.putBoolean("dontshowagain", true);
-					editor.commit();
-				}
-				dialog.dismiss();
-			}
-		});
-		ll.addView(b3);
-
-		dialog.setContentView(ll);
+		AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+		builder.setMessage("If " + APP_TITLE + " has helped you in any way, please take a moment to rate it. Thanks for your support!")
+				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						if (editor != null) {
+							editor.putBoolean("dontshowagain", true);
+							editor.commit();
+						}
+						mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + APP_PNAME)));
+						dialog.dismiss();
+					}
+				}).setNeutralButton("Remind Me", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						dialog.dismiss();
+					}
+				}).setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						if (editor != null) {
+							editor.putBoolean("dontshowagain", true);
+							editor.commit();
+						}
+						dialog.dismiss();
+					}
+				});
+		// Create the AlertDialog object and return it
+		dialog = builder.create();
 		dialog.show();
 	}
 }

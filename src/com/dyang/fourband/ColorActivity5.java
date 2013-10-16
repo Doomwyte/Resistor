@@ -268,9 +268,10 @@ public class ColorActivity5 extends Activity {
 
 		// Define layout params
 		int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
-		LayoutParams rowLayout = new LayoutParams(13, px);
-		rowLayout.leftMargin = 20;
-		rowLayout.rightMargin = 20;
+		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
+		LayoutParams rowLayout = new LayoutParams(width, px);
+		rowLayout.leftMargin = width;
+		rowLayout.rightMargin = width;
 
 		/* Create a textview to be the row-content */
 		TextView view1 = new TextView(this);

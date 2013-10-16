@@ -182,9 +182,10 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 		}
 
 		int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
-		LayoutParams rowLayout = new LayoutParams(13, px);
-		rowLayout.leftMargin = 15;
-		rowLayout.rightMargin = 15;
+		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
+		LayoutParams rowLayout = new LayoutParams(width, px);
+		rowLayout.leftMargin = width;
+		rowLayout.rightMargin = width;
 
 		LayoutParams infoLayout = new LayoutParams();
 		infoLayout.span = 7;

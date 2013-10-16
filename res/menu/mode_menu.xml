@@ -2,5 +2,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/mode4" android:title="@string/fourBandMode"></item>
 	<item android:id="@+id/mode5" android:title="@string/fiveBandMode"></item>
-	<item android:id="@+id/rate" android:title="@string/rateThisApp"></item>
 </menu>
