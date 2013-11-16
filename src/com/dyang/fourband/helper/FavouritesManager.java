@@ -1,93 +1,72 @@
 package com.dyang.fourband.helper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-
+import android.app.Activity;
 import android.content.Context;
-import android.os.Environment;
+import android.content.SharedPreferences;
 import android.widget.Toast;
 
 public class FavouritesManager {
 
-	public static void setFavourites(String first, String second, String third, String fourth, String tolerance, String resultText, Context context) {
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
+	private static final String FAVOURITES_KEY = "com.dyang.fourband.favourites";
+	private static final String APP_PACKAGE = "com.dyang.fourband";
 
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			// We can read and write the media
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			// We can only read the media
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			// Something else is wrong. It may be one of many other
-			// states,
-			// but all we need
-			// to know is we can neither read nor write
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
+	public static void setFavourites(String first, String second, String third, String fourth, String tolerance, String resultText, Activity activity) {
+		SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(APP_PACKAGE, Context.MODE_PRIVATE);
+		String favouritesKey = FAVOURITES_KEY;
+
+		String originalText = getFavourites(activity);
+		String[] originalText_Array;
+
+		int count = 0;
+		if (originalText != null && !originalText.trim().equals("")) {
+			originalText_Array = originalText.split(";");
+			count = originalText_Array.length;
 		}
 
-		try {
-			if (mExternalStorageAvailable && mExternalStorageWriteable) {
-				File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
-				if (!dir.exists())
-					dir.mkdirs();
+		String output;
+		if (fourth != null && !fourth.trim().equals("")) {
+			output = originalText + count + ":" + first + ":" + second + ":" + third + ":" + fourth + ":" + tolerance + ":Val" + resultText + ";";
+		} else {
+			output = originalText + count + ":" + first + ":" + second + ":" + third + ":" + tolerance + ":Val" + resultText + ";";
+		}
 
-				File file = new File(dir, "resistor_list.txt");
-				StringBuilder text = new StringBuilder();
+		prefs.edit().putString(favouritesKey, output).commit();
 
-				int count = 0;
+		CharSequence toastText = "Added To Saved List";
+		int duration = Toast.LENGTH_SHORT;
+		Toast toast = Toast.makeText(activity, toastText, duration);
+		toast.show();
+	}
 
-				if (file.exists()) {
-					BufferedReader br = null;
-					try {
-						br = new BufferedReader(new FileReader(file));
-						String line;
-						while ((line = br.readLine()) != null) {
-							count++;
-							text.append(line);
-							text.append('\n');
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					} finally {
-						if (br != null) {
-							br.close();
-						}
-					}
+	private static void setFavourites(String newFavourites, Activity activity) {
+		SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(APP_PACKAGE, Context.MODE_PRIVATE);
+		String favouritesKey = FAVOURITES_KEY;
+		prefs.edit().putString(favouritesKey, newFavourites).commit();
+	}
+
+	public static String getFavourites(Activity activity) {
+		SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(APP_PACKAGE, Context.MODE_PRIVATE);
+		String favouritesKey = FAVOURITES_KEY;
+		return prefs.getString(favouritesKey, "");
+	}
+
+	public static void deleteItem(Activity activity, String index) {
+		String favourites = getFavourites(activity);
+		if (favourites != null && !favourites.trim().equals("")) {
+			String[] favourites_list = favourites.split(";");
+			StringBuilder newFavourites = new StringBuilder();
+			for (String favourite : favourites_list) {
+				if (!favourite.split(":")[0].equals(index)) {
+					newFavourites.append(favourite).append(";");
 				}
-
-				FileOutputStream fOut = new FileOutputStream(file);
-				String output;
-				if (fourth != null && !fourth.trim().equals("")) {
-					output = text.toString() + count + ":" + first + ":" + second + ":" + third + ":" + fourth + ":" + tolerance + ":Val" + resultText + ";\n";
-				} else {
-					output = text.toString() + count + ":" + first + ":" + second + ":" + third + ":" + tolerance + ":Val" + resultText + ";\n";
-				}
-				fOut.write(output.getBytes());
-				fOut.close();
-
-				CharSequence toastText = "Added To Saved List";
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(context, toastText, duration);
-				toast.show();
-			} else {
-				CharSequence toastText = "SD Card Not Found";
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(context, toastText, duration);
-				toast.show();
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			setFavourites(newFavourites.toString(), activity);
 		}
 	}
 
+	public static void deleteAllItems(Activity activity) {
+		SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(APP_PACKAGE, Context.MODE_PRIVATE);
+		String favouritesKey = FAVOURITES_KEY;
+		prefs.edit().putString(favouritesKey, "").commit();
+	}
 }

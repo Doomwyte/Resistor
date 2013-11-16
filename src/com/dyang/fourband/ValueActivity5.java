@@ -2,6 +2,14 @@ package com.dyang.fourband;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import com.dyang.fourband.helper.FavouritesManager;
 import com.dyang.fourband.helper.ModeManager;
@@ -12,7 +20,7 @@ import com.dyang.fourband.library.dm.RowDm;
 import com.dyang.fourband.library.dm.SdDm;
 import com.dyang.fourband.library.dm.UnitDm;
 
-import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,8 +52,14 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 	private Button valueEnter;
 	private ArrayList<RowDm> firstBand, secondBand, thirdBand, multiplierBand, toleranceBand;
 	private ArrayList<UnitDm> units;
-	private boolean firstMatched, secondMatched, thirdMatched, multiplierMatched, toleranceMatched = false;
-	private String[] infoText;
+	private ArrayList<ResultDm> low_queue, high_queue;
+	private TextView viewPre, view1, view2, view3, view4, view5, viewEnd, viewInfo;
+	private TableRow trInfo;
+	private LayoutParams rowLayout1, rowLayout2, rowLayout3, infoLayout, preEndLayout, seperator;
+	private TableLayout tl;
+	private ProgressDialog progress;
+	private List<View> views;
+	private Boolean stopThreads = false;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -159,19 +173,19 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 				String input_String = valueText.getText().toString();
 				input = Double.parseDouble(input_String);
 			} catch (NumberFormatException nfe) {
-				showAlert("Please enter a valid value.");
+				displayMessage("Please enter a valid value");
 				return;
 			}
 			input *= ((UnitDm) valueUnit.getSelectedItem()).getMultiple();
 		}
 
 		if (input < 1) {
-			showAlert("Please enter a valid value.");
+			displayMessage("Please enter a valid value");
 			return;
 		}
 
 		if (input > 118800000000.0) {
-			showAlert("Please enter a smaller value.");
+			displayMessage("Please enter a smaller value");
 			return;
 		}
 
@@ -182,9 +196,9 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
 		int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 9, getResources().getDisplayMetrics());
 
-		LayoutParams rowLayout1 = new LayoutParams(width, px1);
-		LayoutParams rowLayout2 = new LayoutParams(width, px2);
-		LayoutParams rowLayout3 = new LayoutParams(width, px3);
+		rowLayout1 = new LayoutParams(width, px1);
+		rowLayout2 = new LayoutParams(width, px2);
+		rowLayout3 = new LayoutParams(width, px3);
 		rowLayout1.leftMargin = margin;
 		rowLayout1.rightMargin = margin;
 		rowLayout2.leftMargin = margin;
@@ -192,15 +206,15 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 		rowLayout3.leftMargin = margin;
 		rowLayout3.rightMargin = margin;
 
-		LayoutParams infoLayout = new LayoutParams();
+		infoLayout = new LayoutParams();
 		infoLayout.span = 7;
 
-		LayoutParams preEndLayout = new LayoutParams(150, 100);
+		preEndLayout = new LayoutParams(150, 100);
 
-		LayoutParams seperator = new LayoutParams();
+		seperator = new LayoutParams();
 		seperator.height = 2;
 
-		TableLayout tl = (TableLayout) findViewById(R.id.resultTable);
+		tl = (TableLayout) findViewById(R.id.resultTable);
 		tl.removeAllViews();
 
 		// Third Band Processing
@@ -217,36 +231,36 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 		if (((RowDm) valueTolerance.getSelectedItem()).getResisInt() == 0) {
 
 			if (firstThreeDigit % 1.0 > 0) {
-				displayNoResult();
+				displayMessage("Invalid Value");
 				return;
 			}
 
 			/* Create a textview to be the row-content */
-			TextView viewPre = new TextView(this);
+			viewPre = new TextView(this);
 			viewPre.setLayoutParams(preEndLayout);
-			TextView view1 = new TextView(this);
+			view1 = new TextView(this);
 			view1.setLayoutParams(rowLayout1);
-			TextView view2 = new TextView(this);
+			view2 = new TextView(this);
 			view2.setLayoutParams(rowLayout2);
-			TextView view3 = new TextView(this);
+			view3 = new TextView(this);
 			view3.setLayoutParams(rowLayout3);
-			TextView view4 = new TextView(this);
+			view4 = new TextView(this);
 			view4.setLayoutParams(rowLayout2);
-			TextView view5 = new TextView(this);
+			view5 = new TextView(this);
 			view5.setLayoutParams(rowLayout1);
-			TextView viewEnd = new TextView(this);
+			viewEnd = new TextView(this);
 			viewEnd.setLayoutParams(preEndLayout);
-			TableRow trInfo = new TableRow(this);
+			trInfo = new TableRow(this);
 			trInfo.setGravity(Gravity.CENTER);
-			TextView viewInfo = new TextView(this);
+			viewInfo = new TextView(this);
 			viewInfo.setLayoutParams(infoLayout);
 			viewInfo.setGravity(Gravity.CENTER);
 
-			firstMatched = false;
-			secondMatched = false;
-			thirdMatched = false;
-			multiplierMatched = false;
-			infoText = new String[4];
+			Boolean firstMatched = false;
+			Boolean secondMatched = false;
+			Boolean thirdMatched = false;
+			Boolean multiplierMatched = false;
+			String[] infoText = new String[4];
 
 			for (int i = 0; i < 12; i++) {
 				if (firstBand.size() > i && !firstMatched && firstDigit == firstBand.get(i).getResisInt()) {
@@ -314,7 +328,7 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 			}
 		} else {
 			// As low as possible
-			ArrayList<ResultDm> low_queue = new ArrayList<ResultDm>();
+			low_queue = new ArrayList<ResultDm>();
 			boolean low_end = false;
 
 			// backup
@@ -355,7 +369,7 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 			thirdDigit = thirdDigitBak;
 
 			// As high as possible
-			ArrayList<ResultDm> high_queue = new ArrayList<ResultDm>();
+			high_queue = new ArrayList<ResultDm>();
 			boolean high_end = false;
 			while (!high_end) {
 				thirdDigit++;
@@ -385,265 +399,347 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 			secondDigit = secondDigitBak;
 			thirdDigit = thirdDigitBak;
 
-			int lowQueueSize = low_queue.size();
-			for (int i = lowQueueSize - 1; i >= 0; i--) {
+			progress = new ProgressDialog(this);
+			progress.setTitle("Calculating");
+			progress.setMessage("Please Wait ...");
+			progress.setCancelable(false);
+			progress.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface arg0, int arg1) {
+					stopThreads = true;
+				}
+			});
+			progress.show();
 
-				TableRow tr = new TableRow(this);
-				tr.setGravity(Gravity.CENTER);
-				tr.setBackgroundResource(R.drawable.resistor);
+			Thread thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					Callable<List<View>> lowCallable = new Callable<List<View>>() {
+						@Override
+						public List<View> call() throws Exception {
+							List<View> localTr = new ArrayList<View>();
+							int lowQueueSize = low_queue.size();
+							for (int i = lowQueueSize - 1; i >= 0; i--) {
 
-				TableRow trInfo = new TableRow(this);
-				trInfo.setGravity(Gravity.CENTER);
+								if (stopThreads) {
+									return null;
+								}
 
-				/* Create a textview to be the row-content */
-				TextView viewPre = new TextView(this);
-				viewPre.setLayoutParams(preEndLayout);
-				TextView view1 = new TextView(this);
-				view1.setLayoutParams(rowLayout1);
-				TextView view2 = new TextView(this);
-				view2.setLayoutParams(rowLayout2);
-				TextView view3 = new TextView(this);
-				view3.setLayoutParams(rowLayout3);
-				TextView view4 = new TextView(this);
-				view4.setLayoutParams(rowLayout2);
-				TextView view5 = new TextView(this);
-				view5.setLayoutParams(rowLayout1);
-				TextView viewEnd = new TextView(this);
-				viewEnd.setLayoutParams(preEndLayout);
-				TextView viewInfo = new TextView(this);
-				viewInfo.setLayoutParams(infoLayout);
-				viewInfo.setGravity(Gravity.CENTER);
+								TableRow tr = new TableRow(ValueActivity5.this);
+								tr.setGravity(Gravity.CENTER);
+								tr.setBackgroundResource(R.drawable.resistor);
 
-				firstMatched = false;
-				secondMatched = false;
-				thirdMatched = false;
-				multiplierMatched = false;
-				toleranceMatched = false;
-				infoText = new String[5];
+								TableRow trInfo = new TableRow(ValueActivity5.this);
+								trInfo.setGravity(Gravity.CENTER);
 
-				for (int match = 0; match < 12; match++) {
-					if (firstBand.size() > match) {
-						if (firstBand.get(match).getResisInt() == low_queue.get(i).getFirstBand() && !firstMatched) {
-							view1.setBackgroundResource(firstBand.get(match).getColorInt());
-							infoText[0] = firstBand.get(match).getLabel();
-							firstMatched = true;
-						}
-					}
-					if (secondBand.size() > match) {
-						if (secondBand.get(match).getResisInt() == low_queue.get(i).getSecondBand() && !secondMatched) {
-							view2.setBackgroundResource(secondBand.get(match).getColorInt());
-							infoText[1] = secondBand.get(match).getLabel();
-							secondMatched = true;
-						}
-					}
-					if (thirdBand.size() > match) {
-						if (thirdBand.get(match).getResisInt() == low_queue.get(i).getThirdBand() && !thirdMatched) {
-							view3.setBackgroundResource(thirdBand.get(match).getColorInt());
-							infoText[2] = thirdBand.get(match).getLabel();
-							thirdMatched = true;
-						}
-					}
-					if (multiplierBand.size() > match) {
-						if (multiplierBand.get(match).getResisInt() == low_queue.get(i).getMultiplierBand() && !multiplierMatched) {
-							view4.setBackgroundResource(multiplierBand.get(match).getColorInt());
-							infoText[3] = multiplierBand.get(match).getLabel();
-							multiplierMatched = true;
-						}
-					}
-					if (toleranceBand.size() > match) {
-						if (toleranceBand.get(match).getResisInt() == low_queue.get(i).getToleranceBand() && !toleranceMatched) {
-							if (toleranceBand.get(match).getResisInt() == 0) {
-								view5.setBackgroundResource(R.drawable.slash);
-								infoText[4] = "Any";
-							} else if (toleranceBand.get(match).getResisInt() == 20) {
-								view5.setBackgroundResource(R.drawable.slash);
-								infoText[4] = "None";
-							} else {
-								view5.setBackgroundResource(toleranceBand.get(match).getColorInt());
-								infoText[4] = toleranceBand.get(match).getLabel();
+								/* Create a textview to be the row-content */
+								TextView viewPre = new TextView(ValueActivity5.this);
+								viewPre.setLayoutParams(preEndLayout);
+								TextView view1 = new TextView(ValueActivity5.this);
+								view1.setLayoutParams(rowLayout1);
+								TextView view2 = new TextView(ValueActivity5.this);
+								view2.setLayoutParams(rowLayout2);
+								TextView view3 = new TextView(ValueActivity5.this);
+								view3.setLayoutParams(rowLayout3);
+								TextView view4 = new TextView(ValueActivity5.this);
+								view4.setLayoutParams(rowLayout2);
+								TextView view5 = new TextView(ValueActivity5.this);
+								view5.setLayoutParams(rowLayout1);
+								TextView viewEnd = new TextView(ValueActivity5.this);
+								viewEnd.setLayoutParams(preEndLayout);
+								TextView viewInfo = new TextView(ValueActivity5.this);
+								viewInfo.setLayoutParams(infoLayout);
+								viewInfo.setGravity(Gravity.CENTER);
+
+								Boolean firstMatched = false;
+								Boolean secondMatched = false;
+								Boolean thirdMatched = false;
+								Boolean multiplierMatched = false;
+								Boolean toleranceMatched = false;
+								String[] infoText = new String[5];
+
+								for (int match = 0; match < 12; match++) {
+									if (firstBand.size() > match) {
+										if (firstBand.get(match).getResisInt() == low_queue.get(i).getFirstBand() && !firstMatched) {
+											view1.setBackgroundResource(firstBand.get(match).getColorInt());
+											infoText[0] = firstBand.get(match).getLabel();
+											firstMatched = true;
+										}
+									}
+									if (secondBand.size() > match) {
+										if (secondBand.get(match).getResisInt() == low_queue.get(i).getSecondBand() && !secondMatched) {
+											view2.setBackgroundResource(secondBand.get(match).getColorInt());
+											infoText[1] = secondBand.get(match).getLabel();
+											secondMatched = true;
+										}
+									}
+									if (thirdBand.size() > match) {
+										if (thirdBand.get(match).getResisInt() == low_queue.get(i).getThirdBand() && !thirdMatched) {
+											view3.setBackgroundResource(thirdBand.get(match).getColorInt());
+											infoText[2] = thirdBand.get(match).getLabel();
+											thirdMatched = true;
+										}
+									}
+									if (multiplierBand.size() > match) {
+										if (multiplierBand.get(match).getResisInt() == low_queue.get(i).getMultiplierBand() && !multiplierMatched) {
+											view4.setBackgroundResource(multiplierBand.get(match).getColorInt());
+											infoText[3] = multiplierBand.get(match).getLabel();
+											multiplierMatched = true;
+										}
+									}
+									if (toleranceBand.size() > match) {
+										if (toleranceBand.get(match).getResisInt() == low_queue.get(i).getToleranceBand() && !toleranceMatched) {
+											if (toleranceBand.get(match).getResisInt() == 0) {
+												view5.setBackgroundResource(R.drawable.slash);
+												infoText[4] = "Any";
+											} else if (toleranceBand.get(match).getResisInt() == 20) {
+												view5.setBackgroundResource(R.drawable.slash);
+												infoText[4] = "None";
+											} else {
+												view5.setBackgroundResource(toleranceBand.get(match).getColorInt());
+												infoText[4] = toleranceBand.get(match).getLabel();
+											}
+											toleranceMatched = true;
+										}
+									}
+								}
+
+								if (multiplierMatched) {
+
+									/* Add texts to row. */
+									tr.addView(viewPre);
+									tr.addView(view1);
+									tr.addView(view2);
+									tr.addView(view3);
+									tr.addView(view4);
+									tr.addView(view5);
+									tr.addView(viewEnd);
+
+									/* Add Separator */
+									View seperatorView = new View(ValueActivity5.this);
+									seperatorView.setLayoutParams(seperator);
+									seperatorView.setBackgroundColor(Color.LTGRAY);
+
+									/* Add resistor info to row */
+									if (infoText[4].contains("("))
+										infoText[4] = infoText[4].substring(0, infoText[4].indexOf("(") - 1);
+									UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
+									Double resistValue = low_queue.get(i).getResisVal() / selectedUnit.getMultiple();
+									resistValue = adjustDouble(resistValue, 3);
+									if (resistValue.equals(-1.0))
+										return null;
+									viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | "
+											+ infoText[4]);
+									viewInfo.setTextColor(Color.BLACK);
+
+									trInfo.addView(viewInfo);
+
+									tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue + " " + selectedUnit.getLabel()));
+									tr.setOnLongClickListener(new MyOnLongClickListener());
+
+									/* Add the row to the table */
+									localTr.add(tr);
+									localTr.add(trInfo);
+									localTr.add(seperatorView);
+
+								}
 							}
-							toleranceMatched = true;
+
+							return localTr;
 						}
-					}
-				}
+					};
 
-				if (multiplierMatched) {
+					Callable<List<View>> highCallable = new Callable<List<View>>() {
+						@Override
+						public List<View> call() throws Exception {
+							List<View> localTr = new ArrayList<View>();
+							int highQueueSize = high_queue.size();
+							for (int i = 0; i < highQueueSize; i++) {
 
-					/* Add texts to row. */
-					tr.addView(viewPre);
-					tr.addView(view1);
-					tr.addView(view2);
-					tr.addView(view3);
-					tr.addView(view4);
-					tr.addView(view5);
-					tr.addView(viewEnd);
+								if (stopThreads) {
+									return null;
+								}
 
-					/* Add Separator */
-					View seperatorView = new View(this);
-					seperatorView.setLayoutParams(seperator);
-					seperatorView.setBackgroundColor(Color.LTGRAY);
+								TableRow tr = new TableRow(ValueActivity5.this);
+								tr.setGravity(Gravity.CENTER);
+								tr.setBackgroundResource(R.drawable.resistor);
 
-					/* Add resistor info to row */
-					if (infoText[4].contains("("))
-						infoText[4] = infoText[4].substring(0, infoText[4].indexOf("(") - 1);
-					UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
-					Double resistValue = low_queue.get(i).getResisVal() / selectedUnit.getMultiple();
-					resistValue = adjustDouble(resistValue, 3);
-					if (resistValue.equals(-1.0))
-						return;
-					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
-					viewInfo.setTextColor(Color.BLACK);
+								TableRow trInfo = new TableRow(ValueActivity5.this);
+								trInfo.setGravity(Gravity.CENTER);
 
-					trInfo.addView(viewInfo);
+								/* Create a textview to be the row-content */
+								TextView viewPre = new TextView(ValueActivity5.this);
+								viewPre.setLayoutParams(preEndLayout);
+								TextView view1 = new TextView(ValueActivity5.this);
+								view1.setLayoutParams(rowLayout1);
+								TextView view2 = new TextView(ValueActivity5.this);
+								view2.setLayoutParams(rowLayout2);
+								TextView view3 = new TextView(ValueActivity5.this);
+								view3.setLayoutParams(rowLayout3);
+								TextView view4 = new TextView(ValueActivity5.this);
+								view4.setLayoutParams(rowLayout2);
+								TextView view5 = new TextView(ValueActivity5.this);
+								view5.setLayoutParams(rowLayout1);
+								TextView viewEnd = new TextView(ValueActivity5.this);
+								viewEnd.setLayoutParams(preEndLayout);
+								TextView viewInfo = new TextView(ValueActivity5.this);
+								viewInfo.setLayoutParams(infoLayout);
+								viewInfo.setGravity(Gravity.CENTER);
 
-					tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue + " " + selectedUnit.getLabel()));
-					tr.setOnLongClickListener(new MyOnLongClickListener());
+								Boolean firstMatched = false;
+								Boolean secondMatched = false;
+								Boolean thirdMatched = false;
+								Boolean multiplierMatched = false;
+								Boolean toleranceMatched = false;
+								String[] infoText = new String[5];
 
-					/* Add the row to the table */
-					tl.addView(tr);
-					tl.addView(trInfo);
-					tl.addView(seperatorView);
+								for (int match = 0; match < 12; match++) {
+									if (firstBand.size() > match) {
+										if (firstBand.get(match).getResisInt() == high_queue.get(i).getFirstBand() && !firstMatched) {
+											view1.setBackgroundResource(firstBand.get(match).getColorInt());
+											infoText[0] = firstBand.get(match).getLabel();
+											firstMatched = true;
+										}
+									}
+									if (secondBand.size() > match) {
+										if (secondBand.get(match).getResisInt() == high_queue.get(i).getSecondBand() && !secondMatched) {
+											view2.setBackgroundResource(secondBand.get(match).getColorInt());
+											infoText[1] = secondBand.get(match).getLabel();
+											secondMatched = true;
+										}
+									}
+									if (thirdBand.size() > match) {
+										if (thirdBand.get(match).getResisInt() == high_queue.get(i).getThirdBand() && !thirdMatched) {
+											view3.setBackgroundResource(thirdBand.get(match).getColorInt());
+											infoText[2] = thirdBand.get(match).getLabel();
+											thirdMatched = true;
+										}
+									}
+									if (multiplierBand.size() > match) {
+										if (multiplierBand.get(match).getResisInt() == high_queue.get(i).getMultiplierBand() && !multiplierMatched) {
+											view4.setBackgroundResource(multiplierBand.get(match).getColorInt());
+											infoText[3] = multiplierBand.get(match).getLabel();
+											multiplierMatched = true;
+										}
+									}
+									if (toleranceBand.size() > match) {
+										if (toleranceBand.get(match).getResisInt() == high_queue.get(i).getToleranceBand() && !toleranceMatched) {
+											if (toleranceBand.get(match).getResisInt() == 0) {
+												view5.setBackgroundResource(R.drawable.slash);
+												infoText[4] = toleranceBand.get(match).getLabel();
+											} else if (toleranceBand.get(match).getResisInt() == 20) {
+												view5.setBackgroundResource(R.drawable.slash);
+												infoText[4] = "None";
+											} else {
+												view5.setBackgroundResource(toleranceBand.get(match).getColorInt());
+												infoText[4] = toleranceBand.get(match).getLabel();
+											}
+											toleranceMatched = true;
+										}
+									}
+								}
 
-				}
-			}
+								if (multiplierMatched) {
+									/* Add texts to row. */
+									tr.addView(viewPre);
+									tr.addView(view1);
+									tr.addView(view2);
+									tr.addView(view3);
+									tr.addView(view4);
+									tr.addView(view5);
+									tr.addView(viewEnd);
 
-			int highQueueSize = high_queue.size();
-			for (int i = 0; i < highQueueSize; i++) {
-				TableRow tr = new TableRow(this);
-				tr.setGravity(Gravity.CENTER);
-				tr.setBackgroundResource(R.drawable.resistor);
+									/* Add Separator */
+									View seperatorView = new View(ValueActivity5.this);
+									seperatorView.setLayoutParams(seperator);
+									seperatorView.setBackgroundColor(Color.LTGRAY);
 
-				TableRow trInfo = new TableRow(this);
-				trInfo.setGravity(Gravity.CENTER);
+									/* Add resistor info to row */
+									if (infoText[4].contains("("))
+										infoText[4] = infoText[4].substring(0, infoText[4].indexOf("(") - 1);
 
-				/* Create a textview to be the row-content */
-				TextView viewPre = new TextView(this);
-				viewPre.setLayoutParams(preEndLayout);
-				TextView view1 = new TextView(this);
-				view1.setLayoutParams(rowLayout1);
-				TextView view2 = new TextView(this);
-				view2.setLayoutParams(rowLayout2);
-				TextView view3 = new TextView(this);
-				view3.setLayoutParams(rowLayout3);
-				TextView view4 = new TextView(this);
-				view4.setLayoutParams(rowLayout2);
-				TextView view5 = new TextView(this);
-				view5.setLayoutParams(rowLayout1);
-				TextView viewEnd = new TextView(this);
-				viewEnd.setLayoutParams(preEndLayout);
-				TextView viewInfo = new TextView(this);
-				viewInfo.setLayoutParams(infoLayout);
-				viewInfo.setGravity(Gravity.CENTER);
+									UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
+									Double resistValue = high_queue.get(i).getResisVal() / selectedUnit.getMultiple();
+									resistValue = adjustDouble(resistValue, 3);
+									if (resistValue.equals(-1.0))
+										return null;
+									viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | "
+											+ infoText[4]);
+									viewInfo.setTextColor(Color.BLACK);
 
-				firstMatched = false;
-				secondMatched = false;
-				thirdMatched = false;
-				multiplierMatched = false;
-				toleranceMatched = false;
-				infoText = new String[5];
+									trInfo.addView(viewInfo);
 
-				for (int match = 0; match < 12; match++) {
-					if (firstBand.size() > match) {
-						if (firstBand.get(match).getResisInt() == high_queue.get(i).getFirstBand() && !firstMatched) {
-							view1.setBackgroundResource(firstBand.get(match).getColorInt());
-							infoText[0] = firstBand.get(match).getLabel();
-							firstMatched = true;
-						}
-					}
-					if (secondBand.size() > match) {
-						if (secondBand.get(match).getResisInt() == high_queue.get(i).getSecondBand() && !secondMatched) {
-							view2.setBackgroundResource(secondBand.get(match).getColorInt());
-							infoText[1] = secondBand.get(match).getLabel();
-							secondMatched = true;
-						}
-					}
-					if (thirdBand.size() > match) {
-						if (thirdBand.get(match).getResisInt() == high_queue.get(i).getThirdBand() && !thirdMatched) {
-							view3.setBackgroundResource(thirdBand.get(match).getColorInt());
-							infoText[2] = thirdBand.get(match).getLabel();
-							thirdMatched = true;
-						}
-					}
-					if (multiplierBand.size() > match) {
-						if (multiplierBand.get(match).getResisInt() == high_queue.get(i).getMultiplierBand() && !multiplierMatched) {
-							view4.setBackgroundResource(multiplierBand.get(match).getColorInt());
-							infoText[3] = multiplierBand.get(match).getLabel();
-							multiplierMatched = true;
-						}
-					}
-					if (toleranceBand.size() > match) {
-						if (toleranceBand.get(match).getResisInt() == high_queue.get(i).getToleranceBand() && !toleranceMatched) {
-							if (toleranceBand.get(match).getResisInt() == 0) {
-								view5.setBackgroundResource(R.drawable.slash);
-								infoText[4] = toleranceBand.get(match).getLabel();
-							} else if (toleranceBand.get(match).getResisInt() == 20) {
-								view5.setBackgroundResource(R.drawable.slash);
-								infoText[4] = "None";
-							} else {
-								view5.setBackgroundResource(toleranceBand.get(match).getColorInt());
-								infoText[4] = toleranceBand.get(match).getLabel();
+									tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue + " " + selectedUnit.getLabel()));
+									tr.setOnLongClickListener(new MyOnLongClickListener());
+									tr.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+
+									/* Add the row to the table */
+									localTr.add(tr);
+									localTr.add(trInfo);
+									localTr.add(seperatorView);
+								}
 							}
-							toleranceMatched = true;
+
+							return localTr;
 						}
+					};
+
+					ExecutorService executorService = Executors.newFixedThreadPool(2);
+					Future<List<View>> lowFuture = executorService.submit(lowCallable);
+					Future<List<View>> highFuture = executorService.submit(highCallable);
+
+					Set<Future<List<View>>> set = new HashSet<Future<List<View>>>();
+					set.add(highFuture);
+					set.add(lowFuture);
+					for (Future<List<View>> future : set) {
+						try {
+							views = future.get();
+							if (views == null) {
+								continue;
+							}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							e.printStackTrace();
+						}
+
+						ValueActivity5.this.runOnUiThread(new Runnable() {
+							public void run() {
+								tl.removeAllViews();
+								for (View view : views) {
+									tl.addView(view);
+								}
+							}
+						});
 					}
+
+					ValueActivity5.this.runOnUiThread(new Runnable() {
+						public void run() {
+							if (stopThreads) {
+								displayMessage("Operation Cancelled");
+								stopThreads = false;
+							} else if (tl.getChildCount() == 0) {
+								displayMessage("No Results");
+							}
+							progress.dismiss();
+						}
+					});
 				}
-
-				if (multiplierMatched) {
-					/* Add texts to row. */
-					tr.addView(viewPre);
-					tr.addView(view1);
-					tr.addView(view2);
-					tr.addView(view3);
-					tr.addView(view4);
-					tr.addView(view5);
-					tr.addView(viewEnd);
-
-					/* Add Separator */
-					View seperatorView = new View(this);
-					seperatorView.setLayoutParams(seperator);
-					seperatorView.setBackgroundColor(Color.LTGRAY);
-
-					/* Add resistor info to row */
-					if (infoText[4].contains("("))
-						infoText[4] = infoText[4].substring(0, infoText[4].indexOf("(") - 1);
-
-					UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
-					Double resistValue = high_queue.get(i).getResisVal() / selectedUnit.getMultiple();
-					resistValue = adjustDouble(resistValue, 3);
-					if (resistValue.equals(-1.0))
-						return;
-					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
-					viewInfo.setTextColor(Color.BLACK);
-
-					trInfo.addView(viewInfo);
-
-					tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue + " " + selectedUnit.getLabel()));
-					tr.setOnLongClickListener(new MyOnLongClickListener());
-					tr.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
-
-					/* Add the row to the table */
-					tl.addView(tr);
-					tl.addView(trInfo);
-					tl.addView(seperatorView);
-				}
-			}
-
-			if (tl.getChildCount() == 0) {
-				displayNoResult();
-			}
+			});
+			thread.start();
 		}
 	}
 
-	public void displayNoResult() {
-		TableLayout tl = (TableLayout) findViewById(R.id.resultTable);
+	public void displayMessage(String message) {
 		tl.removeAllViews();
-		TextView viewNoResult = new TextView(this);
-		viewNoResult.setText("No Result");
-		viewNoResult.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+		TextView messageView = new TextView(this);
+		messageView.setText(message);
+		messageView.setTextColor(Color.RED);
+		messageView.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 		// Declare new row
 		TableRow tr = new TableRow(this);
 		tr.setGravity(Gravity.CENTER);
-		tr.addView(viewNoResult);
+		tr.addView(messageView);
 		tl.addView(tr);
 	}
 
@@ -663,23 +759,9 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 			double rValue = Double.parseDouble(df.format(input));
 			return rValue;
 		} catch (NumberFormatException nfe) {
-			showAlert("Please enter a numeric-only value.");
+			displayMessage("Please enter a numeric-only value");
 			return -1.0;
 		}
-	}
-
-	public void showAlert(String msg) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(msg).setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				valueText.setText("");
-				dialog.cancel();
-				return;
-			}
-		});
-		AlertDialog alert = builder.create();
-		alert.show();
-		return;
 	}
 
 	@Override
@@ -693,14 +775,13 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.mode4) {
 			ModeManager.updateMode(4, ValueActivity5.this);
-			Intent myIntent = new Intent(ValueActivity5.this, ValueActivity.class);
-			ValueActivity5.this.startActivity(myIntent);
+			Intent myIntent = new Intent(this, ValueActivity.class);
+			startActivity(myIntent);
 			finish();
 			return true;
 		} else if (item.getItemId() == R.id.viewSavedList) {
-			Intent myIntent = new Intent(ValueActivity5.this, ListActivity.class);
-			ValueActivity5.this.startActivity(myIntent);
-			finish();
+			Intent myIntent = new Intent(this, ListActivity.class);
+			startActivity(myIntent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

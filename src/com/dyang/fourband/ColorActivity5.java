@@ -289,14 +289,13 @@ public class ColorActivity5 extends AbstractActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.mode4) {
 			ModeManager.updateMode(4, ColorActivity5.this);
-			Intent myIntent = new Intent(ColorActivity5.this, ColorActivity.class);
-			ColorActivity5.this.startActivity(myIntent);
+			Intent myIntent = new Intent(this, ColorActivity.class);
+			startActivity(myIntent);
 			finish();
 			return true;
 		} else if (item.getItemId() == R.id.viewSavedList) {
-			Intent myIntent = new Intent(ColorActivity5.this, ListActivity.class);
-			ColorActivity5.this.startActivity(myIntent);
-			finish();
+			Intent myIntent = new Intent(this, ListActivity.class);
+			startActivity(myIntent);
 			return true;
 		}
 

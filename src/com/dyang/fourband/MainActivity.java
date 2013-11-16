@@ -43,23 +43,23 @@ public class MainActivity extends ActionBarActivity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				if (arg2 == 0 && ModeManager.mode == 4) {
 					Intent myIntent = new Intent(MainActivity.this, ColorActivity.class);
-					MainActivity.this.startActivity(myIntent);
+					startActivity(myIntent);
 				}
 				if (arg2 == 0 && ModeManager.mode == 5) {
 					Intent myIntent = new Intent(MainActivity.this, ColorActivity5.class);
-					MainActivity.this.startActivity(myIntent);
+					startActivity(myIntent);
 				} else if (arg2 == 1 && ModeManager.mode == 4) {
 					Intent myIntent = new Intent(MainActivity.this, ValueActivity.class);
-					MainActivity.this.startActivity(myIntent);
+					startActivity(myIntent);
 				} else if (arg2 == 1 && ModeManager.mode == 5) {
 					Intent myIntent = new Intent(MainActivity.this, ValueActivity5.class);
-					MainActivity.this.startActivity(myIntent);
+					startActivity(myIntent);
 				} else if (arg2 == 2) {
 					Intent myIntent = new Intent(MainActivity.this, ListActivity.class);
-					MainActivity.this.startActivity(myIntent);
+					startActivity(myIntent);
 				} else if (arg3 == 3) {
 					Intent myIntent = new Intent(MainActivity.this, HelpActivity.class);
-					MainActivity.this.startActivity(myIntent);
+					startActivity(myIntent);
 				}
 			}
 		});

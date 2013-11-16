@@ -1,6 +1,5 @@
 package com.dyang.fourband;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -46,8 +45,6 @@ public class HelpActivity extends AbstractActivity {
 					helpMsg.setText("To change to 4 or 5 band mode, simply click on the green/orange bar. Selecting the menu icon on the top right of most screens can also perform the same action.");
 					imageView.setImageResource(R.drawable.ss4);
 				} else {
-					Intent myIntent = new Intent(HelpActivity.this, MainActivity.class);
-					HelpActivity.this.startActivity(myIntent);
 					finish();
 				}
 			}
