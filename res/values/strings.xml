@@ -2,12 +2,10 @@
 <resources>
 
     <string name="app_name">Resistor Tool Pro</string>
-    <string name="app_name_without_pro">Resistor Tool</string>
     <string name="blank"></string>
-    <string name="unit">Units</string>
-    <string name="decimal">Decimal Place</string>
+    <string name="unit">Unit</string>
+    <string name="decimals">Decimals</string>
     <string name="enter">Calculate</string>
-    <string name="viewCustomList">View Custom List</string>
     <string name="removeAll">Remove All</string>
     <string name="next">Next</string>
     <string name="first">1st</string>
@@ -19,7 +17,10 @@
     <string name="icon">Icon</string>
     <string name="fourBandMode">4 Band Mode</string>
     <string name="fiveBandMode">5 Band Mode</string>
-    <string name="rateThisApp">Rate This App</string>
+    <string name="findByColor">Find By Color</string>
+    <string name="findByValue">Find By Value</string>
+    <string name="savedList">Saved List</string>
+    <string name="help">Help</string>
 
     <color name="White">#ffffffff</color>
     <color name="Red">#ffff0000</color>
@@ -33,5 +34,12 @@
     <color name="Gold">#ffc79316</color>
     <color name="Grey">#ffC0C0C0</color>
     <color name="Silver">#ffE6E8FA</color>
+
+    <string-array name="mainMenu">
+        <item>Find By Color</item>
+        <item>Find By Value</item>
+        <item>Saved List</item>
+        <item>Help</item>
+    </string-array>
 
 </resources>

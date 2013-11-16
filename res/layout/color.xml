@@ -5,12 +5,27 @@
     android:layout_height="wrap_content"
     android:gravity="center_horizontal" >
 
+    <TextView
+        android:id="@+id/modeText"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/Green"
+        android:gravity="center"
+        android:height="30dip"
+        android:text="@string/app_name"
+        android:textColor="@color/White" >
+    </TextView>
+
     <TableLayout
         android:id="@+id/colorSelection"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/modeText"
         android:layout_gravity="center"
-        android:layout_margin="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
         android:stretchColumns="*" >
 
         <TableRow>
@@ -19,28 +34,36 @@
                 android:id="@+id/textView1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_span="2"
                 android:text="@string/first"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/Black" />
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_span="2"
                 android:text="@string/second"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/Black" />
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_span="2"
                 android:text="@string/third"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/Black" />
 
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_span="4"
                 android:text="@string/tolerance"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/Black" />
         </TableRow>
 
@@ -49,41 +72,26 @@
             <Spinner
                 android:id="@+id/spinner1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_span="2" />
 
             <Spinner
                 android:id="@+id/spinner2"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_span="2" />
 
             <Spinner
                 android:id="@+id/spinner3"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_span="2" />
 
             <Spinner
                 android:id="@+id/spinner4"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_span="2"
-                android:text="@string/unit"
-                android:textColor="@color/Black" />
-
-            <TextView
-                android:id="@+id/decimalText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_span="2"
-                android:text="@string/decimal"
-                android:textColor="@color/Black" />
+                android:layout_span="4" />
         </TableRow>
 
         <TableRow>
@@ -92,13 +100,13 @@
                 android:id="@+id/spinner5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_span="2" />
+                android:layout_span="5" />
 
             <Spinner
                 android:id="@+id/spinner6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_span="2" />
+                android:layout_span="5" />
         </TableRow>
     </TableLayout>
 
@@ -107,13 +115,13 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/colorSelection"
-        android:layout_gravity="center_horizontal" >
+        android:layout_gravity="center_horizontal"
+        android:gravity="center" >
 
         <TableRow
             android:id="@+id/colorImage"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dip"
             android:background="@drawable/resistor" />
 
         <TextView
@@ -125,6 +133,7 @@
             android:layout_below="@+id/colorImage"
             android:gravity="center"
             android:text="@string/blank"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/Black" />
 
         <TextView
@@ -136,6 +145,7 @@
             android:layout_below="@+id/resultText"
             android:gravity="center"
             android:text="@string/blank"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/Black" />
 
         <TextView
@@ -147,6 +157,7 @@
             android:layout_below="@+id/toleranceText"
             android:gravity="center"
             android:text="@string/blank"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/Black" />
     </RelativeLayout>
 

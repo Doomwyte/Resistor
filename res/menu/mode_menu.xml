@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/mode4" android:title="@string/fourBandMode"></item>
-	<item android:id="@+id/mode5" android:title="@string/fiveBandMode"></item>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/mode4"
+        android:showAsAction="ifRoom"
+        android:title="@string/fourBandMode">
+    </item>
+    <item
+        android:id="@+id/mode5"
+        android:showAsAction="ifRoom"
+        android:title="@string/fiveBandMode">
+    </item>
+
 </menu>

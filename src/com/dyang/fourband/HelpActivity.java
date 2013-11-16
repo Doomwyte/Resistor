@@ -1,6 +1,5 @@
 package com.dyang.fourband;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,7 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class HelpActivity extends Activity {
+public class HelpActivity extends AbstractActivity {
 
 	private Button nextButton;
 	private ImageView imageView;
@@ -27,7 +26,7 @@ public class HelpActivity extends Activity {
 		helpMsg = (TextView) findViewById(R.id.helpMsg);
 
 		helpMsg.setTextColor(Color.BLACK);
-		helpMsg.setText("This page will return a list of resistors whose range cover the value you entered. For example, when 25.1 Ohms and 0% tolerance is entered, there will be no result. Whereas if you change tolerance to 2%, it will return 25 Ohms since 25 +/-2% Ohms covers 25.1 Ohms.");
+		helpMsg.setText("This page will return a list of resistors whose range cover the value you entered. For example, when you input 20 Ohms and set the tolerance to 5%, it will return a list of resistors with a 5% tolerance that has 20 Ohms within its range.");
 		imageView.setImageResource(R.drawable.ss1);
 
 		nextButton.setOnClickListener(new OnClickListener() {
@@ -40,11 +39,16 @@ public class HelpActivity extends Activity {
 					imageView.setImageResource(R.drawable.ss2);
 				} else if (page == 2) {
 					page++;
-					helpMsg.setText("Hold onto the resistor to add it to the custom list. A custom list is simply a list of user-entered resistors, just like a shopping list.\n\nTo remove a resistor from the custom list, simply click on the resistor.");
+					helpMsg.setText("Long press the resistor to add it to the saved list. A saved list is simply a list of user-entered resistors, just like a shopping list.\n\nTo remove a resistor from the saved list, simply click on the resistor.");
 					imageView.setImageResource(R.drawable.ss3);
+				} else if (page == 3) {
+					page++;
+					helpMsg.setText("To change to 4 or 5 band mode, simply click on the green/orange bar. Selecting the menu icon on the top right of most screens can also perform the same action.");
+					imageView.setImageResource(R.drawable.ss4);
 				} else {
 					Intent myIntent = new Intent(HelpActivity.this, MainActivity.class);
 					HelpActivity.this.startActivity(myIntent);
+					finish();
 				}
 			}
 

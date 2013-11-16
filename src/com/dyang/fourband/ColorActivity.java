@@ -1,27 +1,20 @@
 package com.dyang.fourband;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import com.dyang.fourband.R;
+import com.dyang.fourband.helper.FavouritesManager;
+import com.dyang.fourband.helper.ModeManager;
 import com.dyang.fourband.library.adapter.DecimalAdapter;
 import com.dyang.fourband.library.adapter.GenericAdapter;
 import com.dyang.fourband.library.adapter.UnitAdapter;
 import com.dyang.fourband.library.dm.RowDm;
 import com.dyang.fourband.library.dm.UnitDm;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
@@ -35,9 +28,8 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class ColorActivity extends Activity {
+public class ColorActivity extends AbstractActivity {
 
 	private Spinner firstSpinner, secondSpinner, thirdSpinner, toleranceSpinner, unitSpinner, decimalSpinner;
 
@@ -51,6 +43,8 @@ public class ColorActivity extends Activity {
 
 		// Set view to color page
 		setContentView(R.layout.color);
+
+		ModeManager.updateMode(-1, this);
 
 		// Attach object to local variable
 		firstSpinner = (Spinner) findViewById(R.id.spinner1);
@@ -161,74 +155,9 @@ public class ColorActivity extends Activity {
 		decimalSpinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
 		colorImage.setOnLongClickListener(new OnLongClickListener() {
 			public boolean onLongClick(View arg0) {
-				boolean mExternalStorageAvailable = false;
-				boolean mExternalStorageWriteable = false;
-				String state = Environment.getExternalStorageState();
-
-				if (Environment.MEDIA_MOUNTED.equals(state)) {
-					// We can read and write the media
-					mExternalStorageAvailable = mExternalStorageWriteable = true;
-				} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-					// We can only read the media
-					mExternalStorageAvailable = true;
-					mExternalStorageWriteable = false;
-				} else {
-					// Something else is wrong. It may be one of many other
-					// states,
-					// but all we need
-					// to know is we can neither read nor write
-					mExternalStorageAvailable = mExternalStorageWriteable = false;
-				}
-
-				try {
-					if (mExternalStorageAvailable && mExternalStorageWriteable) {
-						File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
-						if (!dir.exists())
-							dir.mkdirs();
-
-						File file = new File(dir, "resistor_list.txt");
-						StringBuilder text = new StringBuilder();
-
-						int count = 0;
-
-						if (file.exists()) {
-							try {
-								BufferedReader br = new BufferedReader(new FileReader(file));
-								String line;
-								while ((line = br.readLine()) != null) {
-									count++;
-									text.append(line);
-									text.append('\n');
-								}
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-
-						FileOutputStream fOut = new FileOutputStream(file);
-						String output = text + Integer.toString(count) + ":" + ((RowDm) firstSpinner.getSelectedItem()).getLabel() + ":" + ((RowDm) secondSpinner.getSelectedItem()).getLabel() + ":"
-								+ ((RowDm) thirdSpinner.getSelectedItem()).getLabel() + ":" + ((RowDm) toleranceSpinner.getSelectedItem()).getLabel() + ":" + "Val" + resultText.getText() + ";\n";
-						fOut.write(output.getBytes());
-						fOut.close();
-
-						Context context = getApplicationContext();
-						CharSequence toastText = "Added to custom list";
-						int duration = Toast.LENGTH_SHORT;
-						Toast toast = Toast.makeText(context, toastText, duration);
-						toast.show();
-					} else {
-						Context context = getApplicationContext();
-						CharSequence toastText = "SD Card not found";
-						int duration = Toast.LENGTH_SHORT;
-						Toast toast = Toast.makeText(context, toastText, duration);
-						toast.show();
-					}
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return false;
+				FavouritesManager.setFavourites(((RowDm) firstSpinner.getSelectedItem()).getLabel(), ((RowDm) secondSpinner.getSelectedItem()).getLabel(),
+						((RowDm) thirdSpinner.getSelectedItem()).getLabel(), null, ((RowDm) toleranceSpinner.getSelectedItem()).getLabel(), resultText.getText().toString(), ColorActivity.this);
+				return true;
 			}
 		});
 
@@ -240,21 +169,26 @@ public class ColorActivity extends Activity {
 		colorImage.removeAllViews();
 
 		// Define layout params
-		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
-		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
-		LayoutParams rowLayout = new LayoutParams(width, px);
-		rowLayout.leftMargin = width;
-		rowLayout.rightMargin = width;
+		int px_1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 86, getResources().getDisplayMetrics());
+		int px_2 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 71, getResources().getDisplayMetrics());
+		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+		int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 13, getResources().getDisplayMetrics());
+		LayoutParams rowLayout_1 = new LayoutParams(width, px_1);
+		LayoutParams rowLayout_2 = new LayoutParams(width, px_2);
+		rowLayout_1.leftMargin = margin;
+		rowLayout_1.rightMargin = margin;
+		rowLayout_2.leftMargin = margin;
+		rowLayout_2.rightMargin = margin;
 
 		/* Create a textview to be the row-content */
 		TextView view1 = new TextView(this);
-		view1.setLayoutParams(rowLayout);
+		view1.setLayoutParams(rowLayout_1);
 		TextView view2 = new TextView(this);
-		view2.setLayoutParams(rowLayout);
+		view2.setLayoutParams(rowLayout_2);
 		TextView view3 = new TextView(this);
-		view3.setLayoutParams(rowLayout);
+		view3.setLayoutParams(rowLayout_2);
 		TextView view4 = new TextView(this);
-		view4.setLayoutParams(rowLayout);
+		view4.setLayoutParams(rowLayout_1);
 
 		view1.setBackgroundResource(((RowDm) firstSpinner.getSelectedItem()).getColorInt());
 		view2.setBackgroundResource(((RowDm) secondSpinner.getSelectedItem()).getColorInt());
@@ -296,10 +230,7 @@ public class ColorActivity extends Activity {
 			resultText.setText(adjustDouble(resultOhm, decimalPlaces) + " " + unitSign);
 			toleranceText.setText("Tolerance: " + toleranceDigit + "%" + " (" + adjustDouble(range, decimalPlaces) + " " + unitSign + ")");
 			minmaxText.setText("Range: " + adjustDouble(downRange, decimalPlaces) + " ~ " + adjustDouble(upRange, decimalPlaces) + " " + unitSign);
-			resultText.setTextSize(40);
 			resultText.setTypeface(null, Typeface.BOLD);
-			toleranceText.setTextSize(20);
-			minmaxText.setTextSize(20);
 			resultText.bringToFront();
 
 			loadResistor();
@@ -329,54 +260,18 @@ public class ColorActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.mode5) {
-			updateMode("5", "update");
-		} else {
+			ModeManager.updateMode(5, ColorActivity.this);
+			Intent myIntent = new Intent(ColorActivity.this, ColorActivity5.class);
+			ColorActivity.this.startActivity(myIntent);
+			finish();
+			return true;
+		} else if (item.getItemId() == R.id.viewSavedList) {
 			Intent myIntent = new Intent(ColorActivity.this, ListActivity.class);
 			ColorActivity.this.startActivity(myIntent);
+			finish();
+			return true;
 		}
-		finish();
-		return true;
-	}
-
-	public void updateMode(String input, String action) {
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
-		}
-
-		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
-
-			if (!dir.exists())
-				dir.mkdirs();
-
-			File file = new File(dir, "mode.txt");
-
-			if (file.exists())
-				file.delete();
-
-			try {
-				FileOutputStream fOut = new FileOutputStream(file);
-				String output = input;
-				fOut.write(output.getBytes());
-
-				Intent myIntent = new Intent(ColorActivity.this, ColorActivity5.class);
-				ColorActivity.this.startActivity(myIntent);
-
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		return super.onOptionsItemSelected(item);
 	}
 
 }

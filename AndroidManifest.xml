@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dyang.fourband"
-    android:versionCode="15"
+    android:versionCode="18"
     android:versionName="4.0.0" >
 
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />    
-    
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-sdk
         android:minSdkVersion="7"
-        android:targetSdkVersion="18" />
-    
+        android:targetSdkVersion="19" />
+
     <supports-screens
-    android:largeScreens="true"
-    android:normalScreens="true"
-    android:smallScreens="false"
-    android:xlargeScreens="true" />
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="false"
+        android:xlargeScreens="true" />
 
     <application
+        android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-        android:allowBackup="true" >
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
         <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,17 +28,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ColorActivity" >
+        <activity
+            android:name=".ColorActivity"
+            android:label="@string/findByColor" >
         </activity>
-        <activity android:name=".ColorActivity5" >
+        <activity
+            android:name=".ColorActivity5"
+            android:label="@string/findByColor" >
         </activity>
-        <activity android:name=".ValueActivity" >
+        <activity
+            android:name=".ValueActivity"
+            android:label="@string/findByValue" >
         </activity>
-        <activity android:name=".ValueActivity5" >
+        <activity
+            android:name=".ValueActivity5"
+            android:label="@string/findByValue" >
         </activity>
-        <activity android:name=".ListActivity" >
+        <activity
+            android:name=".ListActivity"
+            android:label="@string/savedList" >
         </activity>
-        <activity android:name="com.dyang.fourband.HelpActivity" >
+        <activity
+            android:name=".HelpActivity"
+            android:label="@string/help" >
+        </activity>
+        <activity android:name=".helper.FavouritesManager" >
+        </activity>
+        <activity android:name=".helper.ModeManager" >
         </activity>
     </application>
+
 </manifest>

@@ -1,14 +1,10 @@
 package com.dyang.fourband;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import com.dyang.fourband.helper.FavouritesManager;
+import com.dyang.fourband.helper.ModeManager;
 import com.dyang.fourband.library.adapter.ToleranceAdapter;
 import com.dyang.fourband.library.adapter.UnitAdapter;
 import com.dyang.fourband.library.dm.ResultDm;
@@ -16,14 +12,12 @@ import com.dyang.fourband.library.dm.RowDm;
 import com.dyang.fourband.library.dm.SdDm;
 import com.dyang.fourband.library.dm.UnitDm;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -41,10 +35,9 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TableRow.LayoutParams;
 
-public class ValueActivity5 extends Activity implements OnClickListener {
+public class ValueActivity5 extends AbstractActivity implements OnClickListener {
 
 	private EditText valueText;
 	private Spinner valueUnit, valueTolerance;
@@ -59,6 +52,8 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.value);
+
+		ModeManager.updateMode(-1, this);
 
 		valueText = (EditText) findViewById(R.id.valueText);
 		valueUnit = (Spinner) findViewById(R.id.valueUnit);
@@ -136,8 +131,7 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 		units.add(new UnitDm("MΩ", 1000000));
 
 		UnitAdapter unitsAdapter = new UnitAdapter(this, R.layout.my_simple_spinner_dropdown_item, units);
-		ToleranceAdapter toleranceAdapter = new ToleranceAdapter(this, R.layout.my_simple_spinner_dropdown_item,
-				toleranceBand);
+		ToleranceAdapter toleranceAdapter = new ToleranceAdapter(this, R.layout.my_simple_spinner_dropdown_item, toleranceBand);
 
 		valueUnit.setAdapter(unitsAdapter);
 		valueUnit.setSelection(3);
@@ -181,11 +175,22 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 			return;
 		}
 
-		int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
-		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
-		LayoutParams rowLayout = new LayoutParams(width, px);
-		rowLayout.leftMargin = width;
-		rowLayout.rightMargin = width;
+		// Define layout params
+		int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 85, getResources().getDisplayMetrics());
+		int px2 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 74, getResources().getDisplayMetrics());
+		int px3 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
+		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+		int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 9, getResources().getDisplayMetrics());
+
+		LayoutParams rowLayout1 = new LayoutParams(width, px1);
+		LayoutParams rowLayout2 = new LayoutParams(width, px2);
+		LayoutParams rowLayout3 = new LayoutParams(width, px3);
+		rowLayout1.leftMargin = margin;
+		rowLayout1.rightMargin = margin;
+		rowLayout2.leftMargin = margin;
+		rowLayout2.rightMargin = margin;
+		rowLayout3.leftMargin = margin;
+		rowLayout3.rightMargin = margin;
 
 		LayoutParams infoLayout = new LayoutParams();
 		infoLayout.span = 7;
@@ -211,24 +216,24 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 
 		if (((RowDm) valueTolerance.getSelectedItem()).getResisInt() == 0) {
 
-			if(firstThreeDigit % 1.0 > 0){
+			if (firstThreeDigit % 1.0 > 0) {
 				displayNoResult();
 				return;
 			}
-			
+
 			/* Create a textview to be the row-content */
 			TextView viewPre = new TextView(this);
 			viewPre.setLayoutParams(preEndLayout);
 			TextView view1 = new TextView(this);
-			view1.setLayoutParams(rowLayout);
+			view1.setLayoutParams(rowLayout1);
 			TextView view2 = new TextView(this);
-			view2.setLayoutParams(rowLayout);
+			view2.setLayoutParams(rowLayout2);
 			TextView view3 = new TextView(this);
-			view3.setLayoutParams(rowLayout);
+			view3.setLayoutParams(rowLayout3);
 			TextView view4 = new TextView(this);
-			view4.setLayoutParams(rowLayout);
+			view4.setLayoutParams(rowLayout2);
 			TextView view5 = new TextView(this);
-			view5.setLayoutParams(rowLayout);
+			view5.setLayoutParams(rowLayout1);
 			TextView viewEnd = new TextView(this);
 			viewEnd.setLayoutParams(preEndLayout);
 			TableRow trInfo = new TableRow(this);
@@ -272,8 +277,7 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 				TableRow tr = new TableRow(this);
 				tr.setGravity(Gravity.CENTER);
 				tr.setBackgroundResource(R.drawable.resistor);
-				tr.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-						android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+				tr.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 
 				/* Add texts to row. */
 				tr.addView(viewPre);
@@ -285,8 +289,7 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 				tr.addView(viewEnd);
 
 				/* Add resistor info to row */
-				viewInfo.setText(infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3]
-						+ " | Any");
+				viewInfo.setText(infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | Any");
 				viewInfo.setTextColor(Color.BLACK);
 
 				trInfo.addView(viewInfo);
@@ -300,10 +303,9 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 				tl.addView(trInfo);
 			} else {
 				TextView viewNoResult = new TextView(this);
-				viewNoResult.setLayoutParams(rowLayout);
+				viewNoResult.setLayoutParams(rowLayout1);
 				viewNoResult.setText("No Result");
-				viewNoResult.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-						android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+				viewNoResult.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 				// Declare new row
 				TableRow tr = new TableRow(this);
 				tr.setGravity(Gravity.CENTER);
@@ -336,17 +338,13 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					powOfTens /= 10;
 				}
 
-				double lowestResistBeforeMultiple = Integer.valueOf(Integer.toString(firstDigit)
-						+ Integer.toString(secondDigit) + Integer.toString(thirdDigit))
-						* powOfTens;
-				double lowestResistance = lowestResistBeforeMultiple
-						* (1 + (((RowDm) valueTolerance.getSelectedItem()).getResisInt() / 100));
+				double lowestResistBeforeMultiple = Integer.valueOf(Integer.toString(firstDigit) + Integer.toString(secondDigit) + Integer.toString(thirdDigit)) * powOfTens;
+				double lowestResistance = lowestResistBeforeMultiple * (1 + (((RowDm) valueTolerance.getSelectedItem()).getResisInt() / 100));
 				if (lowestResistance < input) {
 					low_end = true;
 					break;
 				}
-				low_queue.add(new ResultDm(firstDigit, secondDigit, thirdDigit, powOfTens, ((RowDm) valueTolerance
-						.getSelectedItem()).getResisInt(), lowestResistBeforeMultiple));
+				low_queue.add(new ResultDm(firstDigit, secondDigit, thirdDigit, powOfTens, ((RowDm) valueTolerance.getSelectedItem()).getResisInt(), lowestResistBeforeMultiple));
 				thirdDigit--;
 			}
 
@@ -373,17 +371,13 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					firstDigit = 1;
 					powOfTens *= 10;
 				}
-				double highestResistBeforeMultiple = Integer.valueOf(Integer.toString(firstDigit)
-						+ Integer.toString(secondDigit) + Integer.toString(thirdDigit))
-						* powOfTens;
-				double highestResistance = highestResistBeforeMultiple
-						* (1 - (((RowDm) valueTolerance.getSelectedItem()).getResisInt() / 100));
+				double highestResistBeforeMultiple = Integer.valueOf(Integer.toString(firstDigit) + Integer.toString(secondDigit) + Integer.toString(thirdDigit)) * powOfTens;
+				double highestResistance = highestResistBeforeMultiple * (1 - (((RowDm) valueTolerance.getSelectedItem()).getResisInt() / 100));
 				if (highestResistance > input) {
 					high_end = true;
 					break;
 				}
-				high_queue.add(new ResultDm(firstDigit, secondDigit, thirdDigit, powOfTens, ((RowDm) valueTolerance
-						.getSelectedItem()).getResisInt(), highestResistBeforeMultiple));
+				high_queue.add(new ResultDm(firstDigit, secondDigit, thirdDigit, powOfTens, ((RowDm) valueTolerance.getSelectedItem()).getResisInt(), highestResistBeforeMultiple));
 			}
 			// Set back to default
 			powOfTens = powOfTensBak;
@@ -405,15 +399,15 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 				TextView viewPre = new TextView(this);
 				viewPre.setLayoutParams(preEndLayout);
 				TextView view1 = new TextView(this);
-				view1.setLayoutParams(rowLayout);
+				view1.setLayoutParams(rowLayout1);
 				TextView view2 = new TextView(this);
-				view2.setLayoutParams(rowLayout);
+				view2.setLayoutParams(rowLayout2);
 				TextView view3 = new TextView(this);
-				view3.setLayoutParams(rowLayout);
+				view3.setLayoutParams(rowLayout3);
 				TextView view4 = new TextView(this);
-				view4.setLayoutParams(rowLayout);
+				view4.setLayoutParams(rowLayout2);
 				TextView view5 = new TextView(this);
-				view5.setLayoutParams(rowLayout);
+				view5.setLayoutParams(rowLayout1);
 				TextView viewEnd = new TextView(this);
 				viewEnd.setLayoutParams(preEndLayout);
 				TextView viewInfo = new TextView(this);
@@ -450,16 +444,14 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 						}
 					}
 					if (multiplierBand.size() > match) {
-						if (multiplierBand.get(match).getResisInt() == low_queue.get(i).getMultiplierBand()
-								&& !multiplierMatched) {
+						if (multiplierBand.get(match).getResisInt() == low_queue.get(i).getMultiplierBand() && !multiplierMatched) {
 							view4.setBackgroundResource(multiplierBand.get(match).getColorInt());
 							infoText[3] = multiplierBand.get(match).getLabel();
 							multiplierMatched = true;
 						}
 					}
 					if (toleranceBand.size() > match) {
-						if (toleranceBand.get(match).getResisInt() == low_queue.get(i).getToleranceBand()
-								&& !toleranceMatched) {
+						if (toleranceBand.get(match).getResisInt() == low_queue.get(i).getToleranceBand() && !toleranceMatched) {
 							if (toleranceBand.get(match).getResisInt() == 0) {
 								view5.setBackgroundResource(R.drawable.slash);
 								infoText[4] = "Any";
@@ -489,7 +481,7 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					/* Add Separator */
 					View seperatorView = new View(this);
 					seperatorView.setLayoutParams(seperator);
-					seperatorView.setBackgroundColor(Color.DKGRAY);
+					seperatorView.setBackgroundColor(Color.LTGRAY);
 
 					/* Add resistor info to row */
 					if (infoText[4].contains("("))
@@ -499,14 +491,12 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					resistValue = adjustDouble(resistValue, 3);
 					if (resistValue.equals(-1.0))
 						return;
-					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | "
-							+ infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
+					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
 					viewInfo.setTextColor(Color.BLACK);
 
 					trInfo.addView(viewInfo);
 
-					tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue
-							+ " " + selectedUnit.getLabel()));
+					tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue + " " + selectedUnit.getLabel()));
 					tr.setOnLongClickListener(new MyOnLongClickListener());
 
 					/* Add the row to the table */
@@ -530,15 +520,15 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 				TextView viewPre = new TextView(this);
 				viewPre.setLayoutParams(preEndLayout);
 				TextView view1 = new TextView(this);
-				view1.setLayoutParams(rowLayout);
+				view1.setLayoutParams(rowLayout1);
 				TextView view2 = new TextView(this);
-				view2.setLayoutParams(rowLayout);
+				view2.setLayoutParams(rowLayout2);
 				TextView view3 = new TextView(this);
-				view3.setLayoutParams(rowLayout);
+				view3.setLayoutParams(rowLayout3);
 				TextView view4 = new TextView(this);
-				view4.setLayoutParams(rowLayout);
+				view4.setLayoutParams(rowLayout2);
 				TextView view5 = new TextView(this);
-				view5.setLayoutParams(rowLayout);
+				view5.setLayoutParams(rowLayout1);
 				TextView viewEnd = new TextView(this);
 				viewEnd.setLayoutParams(preEndLayout);
 				TextView viewInfo = new TextView(this);
@@ -575,16 +565,14 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 						}
 					}
 					if (multiplierBand.size() > match) {
-						if (multiplierBand.get(match).getResisInt() == high_queue.get(i).getMultiplierBand()
-								&& !multiplierMatched) {
+						if (multiplierBand.get(match).getResisInt() == high_queue.get(i).getMultiplierBand() && !multiplierMatched) {
 							view4.setBackgroundResource(multiplierBand.get(match).getColorInt());
 							infoText[3] = multiplierBand.get(match).getLabel();
 							multiplierMatched = true;
 						}
 					}
 					if (toleranceBand.size() > match) {
-						if (toleranceBand.get(match).getResisInt() == high_queue.get(i).getToleranceBand()
-								&& !toleranceMatched) {
+						if (toleranceBand.get(match).getResisInt() == high_queue.get(i).getToleranceBand() && !toleranceMatched) {
 							if (toleranceBand.get(match).getResisInt() == 0) {
 								view5.setBackgroundResource(R.drawable.slash);
 								infoText[4] = toleranceBand.get(match).getLabel();
@@ -613,7 +601,7 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					/* Add Separator */
 					View seperatorView = new View(this);
 					seperatorView.setLayoutParams(seperator);
-					seperatorView.setBackgroundColor(Color.DKGRAY);
+					seperatorView.setBackgroundColor(Color.LTGRAY);
 
 					/* Add resistor info to row */
 					if (infoText[4].contains("("))
@@ -624,15 +612,14 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 					resistValue = adjustDouble(resistValue, 3);
 					if (resistValue.equals(-1.0))
 						return;
-					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | "
-							+ infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
+					viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | " + infoText[4]);
 					viewInfo.setTextColor(Color.BLACK);
 
 					trInfo.addView(viewInfo);
 
-					tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue
-							+ " " + selectedUnit.getLabel()));
+					tr.setTag(new SdDm(infoText[0], infoText[1], infoText[2], infoText[3], infoText[4], resistValue + " " + selectedUnit.getLabel()));
 					tr.setOnLongClickListener(new MyOnLongClickListener());
+					tr.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 
 					/* Add the row to the table */
 					tl.addView(tr);
@@ -646,14 +633,13 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 			}
 		}
 	}
-	
-	public void displayNoResult(){
+
+	public void displayNoResult() {
 		TableLayout tl = (TableLayout) findViewById(R.id.resultTable);
 		tl.removeAllViews();
 		TextView viewNoResult = new TextView(this);
 		viewNoResult.setText("No Result");
-		viewNoResult.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-				android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+		viewNoResult.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 		// Declare new row
 		TableRow tr = new TableRow(this);
 		tr.setGravity(Gravity.CENTER);
@@ -662,79 +648,10 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 	}
 
 	public class MyOnLongClickListener implements OnLongClickListener {
-
 		public boolean onLongClick(View arg0) {
-
-			boolean mExternalStorageAvailable = false;
-			boolean mExternalStorageWriteable = false;
-			String state = Environment.getExternalStorageState();
-
-			if (Environment.MEDIA_MOUNTED.equals(state)) {
-				// We can read and write the media
-				mExternalStorageAvailable = mExternalStorageWriteable = true;
-			} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-				// We can only read the media
-				mExternalStorageAvailable = true;
-				mExternalStorageWriteable = false;
-			} else {
-				// Something else is wrong. It may be one of many other states,
-				// but all we need
-				// to know is we can neither read nor write
-				mExternalStorageAvailable = mExternalStorageWriteable = false;
-			}
-
-			try {
-				if (mExternalStorageAvailable && mExternalStorageWriteable) {
-					File dir = new File(Environment.getExternalStorageDirectory().getPath()
-							+ "/Android/data/com.dyang.fourband/files");
-					if (!dir.exists())
-						dir.mkdirs();
-
-					File file = new File(dir, "resistor_list.txt");
-					StringBuilder text = new StringBuilder();
-
-					int count = 0;
-
-					if (file.exists()) {
-						try {
-							BufferedReader br = new BufferedReader(new FileReader(file));
-							String line;
-							while ((line = br.readLine()) != null) {
-								count++;
-								text.append(line);
-								text.append('\n');
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-
-					FileOutputStream fOut = new FileOutputStream(file);
-					String output = text + Integer.toString(count) + ":" + ((SdDm) arg0.getTag()).getFirstBand() + ":"
-							+ ((SdDm) arg0.getTag()).getSecondBand() + ":" + ((SdDm) arg0.getTag()).getThirdBand()
-							+ ":" + ((SdDm) arg0.getTag()).getMultiplierBand() + ":"
-							+ ((SdDm) arg0.getTag()).getToleranceBand() + ":" + "Val"
-							+ ((SdDm) arg0.getTag()).getResistValue() + ";\n";
-					fOut.write(output.getBytes());
-
-					Context context = getApplicationContext();
-					CharSequence toastText = "Added to custom list";
-					int duration = Toast.LENGTH_SHORT;
-					Toast toast = Toast.makeText(context, toastText, duration);
-					toast.show();
-				} else {
-					Context context = getApplicationContext();
-					CharSequence toastText = "SD Card not found";
-					int duration = Toast.LENGTH_SHORT;
-					Toast toast = Toast.makeText(context, toastText, duration);
-					toast.show();
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
+			FavouritesManager.setFavourites(((SdDm) arg0.getTag()).getFirstBand(), ((SdDm) arg0.getTag()).getSecondBand(), ((SdDm) arg0.getTag()).getThirdBand(),
+					((SdDm) arg0.getTag()).getMultiplierBand(), ((SdDm) arg0.getTag()).getToleranceBand(), ((SdDm) arg0.getTag()).getResistValue(), ValueActivity5.this);
+			return true;
 		}
 	}
 
@@ -775,55 +692,18 @@ public class ValueActivity5 extends Activity implements OnClickListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.mode4) {
-			updateMode("4", "update");
-		} else {
+			ModeManager.updateMode(4, ValueActivity5.this);
+			Intent myIntent = new Intent(ValueActivity5.this, ValueActivity.class);
+			ValueActivity5.this.startActivity(myIntent);
+			finish();
+			return true;
+		} else if (item.getItemId() == R.id.viewSavedList) {
 			Intent myIntent = new Intent(ValueActivity5.this, ListActivity.class);
 			ValueActivity5.this.startActivity(myIntent);
+			finish();
+			return true;
 		}
-		finish();
-		return true;
-	}
-
-	public void updateMode(String input, String action) {
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
-		}
-
-		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath()
-					+ "/Android/data/com.dyang.fourband/files");
-
-			if (!dir.exists())
-				dir.mkdirs();
-
-			File file = new File(dir, "mode.txt");
-
-			if (file.exists())
-				file.delete();
-
-			try {
-				FileOutputStream fOut = new FileOutputStream(file);
-				String output = input;
-				fOut.write(output.getBytes());
-
-				Intent myIntent = new Intent(ValueActivity5.this, ValueActivity.class);
-				ValueActivity5.this.startActivity(myIntent);
-
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		return super.onOptionsItemSelected(item);
 	}
 
 }

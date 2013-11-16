@@ -10,7 +10,7 @@
         android:id="@+id/helpMsg"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dip"
+        android:layout_margin="10dp"
         android:gravity="fill_horizontal"
         android:textIsSelectable="false" >
     </TextView>
@@ -19,8 +19,12 @@
         android:id="@+id/imageView1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/next"
+        android:layout_below="@id/helpMsg"
+        android:layout_margin="10dp"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/icon"
-        android:layout_below="@+id/helpMsg" >
+        android:scaleType="fitCenter" >
     </ImageView>
 
     <Button

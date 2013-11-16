@@ -1,27 +1,20 @@
 package com.dyang.fourband;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import com.dyang.fourband.R;
+import com.dyang.fourband.helper.FavouritesManager;
+import com.dyang.fourband.helper.ModeManager;
 import com.dyang.fourband.library.adapter.DecimalAdapter;
 import com.dyang.fourband.library.adapter.GenericAdapter;
 import com.dyang.fourband.library.adapter.UnitAdapter;
 import com.dyang.fourband.library.dm.RowDm;
 import com.dyang.fourband.library.dm.UnitDm;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
@@ -35,12 +28,10 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class ColorActivity5 extends Activity {
+public class ColorActivity5 extends AbstractActivity {
 
-	private Spinner firstSpinner, secondSpinner, thirdSpinner, multiplierSpinner, toleranceSpinner, unitSpinner,
-			decimalSpinner;
+	private Spinner firstSpinner, secondSpinner, thirdSpinner, multiplierSpinner, toleranceSpinner, unitSpinner, decimalSpinner;
 
 	private TextView resultText, toleranceText, minmaxText;
 
@@ -52,6 +43,8 @@ public class ColorActivity5 extends Activity {
 
 		// Set view to colour page
 		setContentView(R.layout.color5);
+
+		ModeManager.updateMode(-1, this);
 
 		// Attach object to local variable
 		firstSpinner = (Spinner) findViewById(R.id.spinner1);
@@ -149,16 +142,12 @@ public class ColorActivity5 extends Activity {
 
 		// Initiate Customized Adapter
 		GenericAdapter firstBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item, firstBand);
-		GenericAdapter secondBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item,
-				secondBand);
+		GenericAdapter secondBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item, secondBand);
 		GenericAdapter thirdBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item, thirdBand);
-		GenericAdapter multiplierBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item,
-				multiplierBand);
-		GenericAdapter toleranceBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item,
-				toleranceBand);
+		GenericAdapter multiplierBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item, multiplierBand);
+		GenericAdapter toleranceBandAdapter = new GenericAdapter(this, R.layout.my_simple_spinner_dropdown_item, toleranceBand);
 		UnitAdapter unitsAdapter = new UnitAdapter(this, R.layout.my_simple_spinner_dropdown_item, units);
-		DecimalAdapter decimalAdapter = new DecimalAdapter(this, R.layout.my_simple_spinner_dropdown_item,
-				decimalPlaces);
+		DecimalAdapter decimalAdapter = new DecimalAdapter(this, R.layout.my_simple_spinner_dropdown_item, decimalPlaces);
 
 		// Attach object to adapter
 		firstSpinner.setAdapter(firstBandAdapter);
@@ -183,79 +172,10 @@ public class ColorActivity5 extends Activity {
 		decimalSpinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
 		colorImage.setOnLongClickListener(new OnLongClickListener() {
 			public boolean onLongClick(View arg0) {
-				boolean mExternalStorageAvailable = false;
-				boolean mExternalStorageWriteable = false;
-				String state = Environment.getExternalStorageState();
-
-				if (Environment.MEDIA_MOUNTED.equals(state)) {
-					// We can read and write the media
-					mExternalStorageAvailable = mExternalStorageWriteable = true;
-				} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-					// We can only read the media
-					mExternalStorageAvailable = true;
-					mExternalStorageWriteable = false;
-				} else {
-					// Something else is wrong. It may be one of many other
-					// states,
-					// but all we need
-					// to know is we can neither read nor write
-					mExternalStorageAvailable = mExternalStorageWriteable = false;
-				}
-
-				try {
-					if (mExternalStorageAvailable && mExternalStorageWriteable) {
-						File dir = new File(Environment.getExternalStorageDirectory().getPath()
-								+ "/Android/data/com.dyang.fourband/files");
-						if (!dir.exists())
-							dir.mkdirs();
-
-						File file = new File(dir, "resistor_list.txt");
-						StringBuilder text = new StringBuilder();
-
-						int count = 0;
-
-						if (file.exists()) {
-							try {
-								BufferedReader br = new BufferedReader(new FileReader(file));
-								String line;
-								while ((line = br.readLine()) != null) {
-									count++;
-									text.append(line);
-									text.append('\n');
-								}
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-
-						FileOutputStream fOut = new FileOutputStream(file);
-						String output = text + Integer.toString(count) + ":"
-								+ ((RowDm) firstSpinner.getSelectedItem()).getLabel() + ":"
-								+ ((RowDm) secondSpinner.getSelectedItem()).getLabel() + ":"
-								+ ((RowDm) thirdSpinner.getSelectedItem()).getLabel() + ":"
-								+ ((RowDm) multiplierSpinner.getSelectedItem()).getLabel() + ":"
-								+ ((RowDm) toleranceSpinner.getSelectedItem()).getLabel() + ":" + "Val"
-								+ resultText.getText() + ";\n";
-						fOut.write(output.getBytes());
-
-						Context context = getApplicationContext();
-						CharSequence toastText = "Added to custom list";
-						int duration = Toast.LENGTH_SHORT;
-						Toast toast = Toast.makeText(context, toastText, duration);
-						toast.show();
-					} else {
-						Context context = getApplicationContext();
-						CharSequence toastText = "SD Card not found";
-						int duration = Toast.LENGTH_SHORT;
-						Toast toast = Toast.makeText(context, toastText, duration);
-						toast.show();
-					}
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return false;
+				FavouritesManager.setFavourites(((RowDm) firstSpinner.getSelectedItem()).getLabel(), ((RowDm) secondSpinner.getSelectedItem()).getLabel(),
+						((RowDm) thirdSpinner.getSelectedItem()).getLabel(), ((RowDm) multiplierSpinner.getSelectedItem()).getLabel(), ((RowDm) toleranceSpinner.getSelectedItem()).getLabel(),
+						resultText.getText().toString(), ColorActivity5.this);
+				return true;
 			}
 		});
 
@@ -267,23 +187,33 @@ public class ColorActivity5 extends Activity {
 		colorImage.removeAllViews();
 
 		// Define layout params
-		int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
-		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
-		LayoutParams rowLayout = new LayoutParams(width, px);
-		rowLayout.leftMargin = width;
-		rowLayout.rightMargin = width;
-
+		int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 85, getResources().getDisplayMetrics());
+		int px2 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 74, getResources().getDisplayMetrics());
+		int px3 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
+		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+		int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 9, getResources().getDisplayMetrics());
+		
+		LayoutParams rowLayout1 = new LayoutParams(width, px1);
+		LayoutParams rowLayout2 = new LayoutParams(width, px2);
+		LayoutParams rowLayout3 = new LayoutParams(width, px3);
+		rowLayout1.leftMargin = margin;
+		rowLayout1.rightMargin = margin;
+		rowLayout2.leftMargin = margin;
+		rowLayout2.rightMargin = margin;
+		rowLayout3.leftMargin = margin;
+		rowLayout3.rightMargin = margin;
+		
 		/* Create a textview to be the row-content */
 		TextView view1 = new TextView(this);
-		view1.setLayoutParams(rowLayout);
+		view1.setLayoutParams(rowLayout1);
 		TextView view2 = new TextView(this);
-		view2.setLayoutParams(rowLayout);
+		view2.setLayoutParams(rowLayout2);
 		TextView view3 = new TextView(this);
-		view3.setLayoutParams(rowLayout);
+		view3.setLayoutParams(rowLayout3);
 		TextView view4 = new TextView(this);
-		view4.setLayoutParams(rowLayout);
+		view4.setLayoutParams(rowLayout2);
 		TextView view5 = new TextView(this);
-		view5.setLayoutParams(rowLayout);
+		view5.setLayoutParams(rowLayout1);
 
 		view1.setBackgroundResource(((RowDm) firstSpinner.getSelectedItem()).getColorInt());
 		view2.setBackgroundResource(((RowDm) secondSpinner.getSelectedItem()).getColorInt());
@@ -316,8 +246,7 @@ public class ColorActivity5 extends Activity {
 			int thirdDigit = (int) ((RowDm) thirdSpinner.getSelectedItem()).getResisInt();
 			double multiplierDigit = ((RowDm) multiplierSpinner.getSelectedItem()).getResisInt();
 			double toleranceDigit = ((RowDm) toleranceSpinner.getSelectedItem()).getResisInt();
-			String firstThreeDigit = Integer.toString(firstDigit).concat(Integer.toString(secondDigit))
-					.concat(Integer.toString(thirdDigit));
+			String firstThreeDigit = Integer.toString(firstDigit).concat(Integer.toString(secondDigit)).concat(Integer.toString(thirdDigit));
 			resultOhm = Integer.valueOf(firstThreeDigit) * multiplierDigit;
 			double range = resultOhm * toleranceDigit / 100;
 			double upRange = resultOhm + range;
@@ -327,14 +256,9 @@ public class ColorActivity5 extends Activity {
 			String unitSign = ((UnitDm) unitSpinner.getSelectedItem()).getLabel();
 			Integer decimalPlaces = Integer.valueOf(decimalSpinner.getSelectedItem().toString());
 			resultText.setText(adjustDouble(resultOhm, decimalPlaces) + " " + unitSign);
-			toleranceText.setText("Tolerance: " + toleranceDigit + "%" + " (" + adjustDouble(range, decimalPlaces)
-					+ " " + unitSign + ")");
-			minmaxText.setText("Range: " + adjustDouble(downRange, decimalPlaces) + " ~ "
-					+ adjustDouble(upRange, decimalPlaces) + " " + unitSign);
-			resultText.setTextSize(40);
+			toleranceText.setText("Tolerance: " + toleranceDigit + "%" + " (" + adjustDouble(range, decimalPlaces) + " " + unitSign + ")");
+			minmaxText.setText("Range: " + adjustDouble(downRange, decimalPlaces) + " ~ " + adjustDouble(upRange, decimalPlaces) + " " + unitSign);
 			resultText.setTypeface(null, Typeface.BOLD);
-			toleranceText.setTextSize(20);
-			minmaxText.setTextSize(20);
 			resultText.bringToFront();
 
 			loadResistor();
@@ -364,55 +288,18 @@ public class ColorActivity5 extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.mode4) {
-			updateMode("4", "update");
-		} else {
+			ModeManager.updateMode(4, ColorActivity5.this);
+			Intent myIntent = new Intent(ColorActivity5.this, ColorActivity.class);
+			ColorActivity5.this.startActivity(myIntent);
+			finish();
+			return true;
+		} else if (item.getItemId() == R.id.viewSavedList) {
 			Intent myIntent = new Intent(ColorActivity5.this, ListActivity.class);
 			ColorActivity5.this.startActivity(myIntent);
+			finish();
+			return true;
 		}
-		finish();
-		return true;
+
+		return super.onOptionsItemSelected(item);
 	}
-
-	public void updateMode(String input, String action) {
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
-		}
-
-		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath()
-					+ "/Android/data/com.dyang.fourband/files");
-
-			if (!dir.exists())
-				dir.mkdirs();
-
-			File file = new File(dir, "mode.txt");
-
-			if (file.exists())
-				file.delete();
-
-			try {
-				FileOutputStream fOut = new FileOutputStream(file);
-				String output = input;
-				fOut.write(output.getBytes());
-
-				Intent myIntent = new Intent(ColorActivity5.this, ColorActivity.class);
-				ColorActivity5.this.startActivity(myIntent);
-
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 }

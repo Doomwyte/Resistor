@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -27,7 +26,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableRow.LayoutParams;
 
-public class ListActivity extends Activity {
+public class ListActivity extends AbstractActivity {
 
 	private String[] sets;
 	private TableLayout tl;
@@ -50,12 +49,14 @@ public class ListActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		File dir = new File(Environment.getExternalStorageDirectory().getPath()
-				+ "/Android/data/com.dyang.fourband/files");
-		File file = new File(dir, "resistor_list.txt");
-		file.delete();
-		loadTable();
-		return true;
+		if (item.getItemId() == R.id.removeAll) {
+			File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
+			File file = new File(dir, "resistor_list.txt");
+			file.delete();
+			loadTable();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	public void loadTable() {
@@ -78,8 +79,7 @@ public class ListActivity extends Activity {
 		}
 
 		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath()
-					+ "/Android/data/com.dyang.fourband/files");
+			File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
 
 			if (!dir.exists())
 				dir.mkdirs();
@@ -88,12 +88,14 @@ public class ListActivity extends Activity {
 			StringBuilder text = new StringBuilder();
 
 			if (file.exists()) {
+				BufferedReader br = null;
 				try {
-					BufferedReader br = new BufferedReader(new FileReader(file));
+					br = new BufferedReader(new FileReader(file));
 					String line;
 					while ((line = br.readLine()) != null) {
 						text.append(line);
 					}
+					br.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -111,11 +113,22 @@ public class ListActivity extends Activity {
 					// Define layout params
 					LayoutParams preEndLayout = new LayoutParams(150, 100);
 
-					int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
-					int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
-					LayoutParams rowLayout = new LayoutParams(width, px);
-					rowLayout.leftMargin = width;
-					rowLayout.rightMargin = width;
+					// Define layout params
+					int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 85, getResources().getDisplayMetrics());
+					int px2 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 74, getResources().getDisplayMetrics());
+					int px3 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
+					int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+					int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 9, getResources().getDisplayMetrics());
+
+					LayoutParams rowLayout1 = new LayoutParams(width, px1);
+					LayoutParams rowLayout2 = new LayoutParams(width, px2);
+					LayoutParams rowLayout3 = new LayoutParams(width, px3);
+					rowLayout1.leftMargin = margin;
+					rowLayout1.rightMargin = margin;
+					rowLayout2.leftMargin = margin;
+					rowLayout2.rightMargin = margin;
+					rowLayout3.leftMargin = margin;
+					rowLayout3.rightMargin = margin;
 
 					LayoutParams seperator = new LayoutParams();
 					seperator.height = 1;
@@ -130,15 +143,15 @@ public class ListActivity extends Activity {
 					TextView viewPre = new TextView(this);
 					viewPre.setLayoutParams(preEndLayout);
 					TextView view1 = new TextView(this);
-					view1.setLayoutParams(rowLayout);
+					view1.setLayoutParams(rowLayout1);
 					TextView view2 = new TextView(this);
-					view2.setLayoutParams(rowLayout);
+					view2.setLayoutParams(rowLayout2);
 					TextView view3 = new TextView(this);
-					view3.setLayoutParams(rowLayout);
+					view3.setLayoutParams(rowLayout3);
 					TextView view4 = new TextView(this);
-					view4.setLayoutParams(rowLayout);
+					view4.setLayoutParams(rowLayout2);
 					TextView view5 = new TextView(this);
-					view5.setLayoutParams(rowLayout);
+					view5.setLayoutParams(rowLayout1);
 					TextView viewEnd = new TextView(this);
 					viewEnd.setLayoutParams(preEndLayout);
 
@@ -150,18 +163,14 @@ public class ListActivity extends Activity {
 					if (subSets[5] != null)
 						color5 = subSets[5].trim();
 
-					view1.setBackgroundResource(this.getResources().getIdentifier(color1, "color",
-							this.getPackageName()));
-					view2.setBackgroundResource(this.getResources().getIdentifier(color2, "color",
-							this.getPackageName()));
-					view3.setBackgroundResource(this.getResources().getIdentifier(color3, "color",
-							this.getPackageName()));
+					view1.setBackgroundResource(this.getResources().getIdentifier(color1, "color", this.getPackageName()));
+					view2.setBackgroundResource(this.getResources().getIdentifier(color2, "color", this.getPackageName()));
+					view3.setBackgroundResource(this.getResources().getIdentifier(color3, "color", this.getPackageName()));
 
 					if (color4.equals("Any") || color4.equals("None")) {
 						view4.setBackgroundResource(R.drawable.slash);
 					} else {
-						view4.setBackgroundResource(this.getResources().getIdentifier(color4, "color",
-								this.getPackageName()));
+						view4.setBackgroundResource(this.getResources().getIdentifier(color4, "color", this.getPackageName()));
 					}
 
 					if (subSets.length > 5) {
@@ -170,8 +179,7 @@ public class ListActivity extends Activity {
 						} else if (color5.startsWith("Val")) {
 							resistValue = subSets[5].trim().substring(3);
 						} else {
-							view5.setBackgroundResource(this.getResources().getIdentifier(color5, "color",
-									this.getPackageName()));
+							view5.setBackgroundResource(this.getResources().getIdentifier(color5, "color", this.getPackageName()));
 						}
 					}
 
@@ -179,7 +187,7 @@ public class ListActivity extends Activity {
 						resistValue = subSets[6].trim().substring(3);
 					}
 
-					/* Add texts to row. */
+					/* Add color bars to row. */
 					tr.addView(viewPre);
 					tr.addView(view1);
 					tr.addView(view2);
@@ -188,28 +196,28 @@ public class ListActivity extends Activity {
 					tr.addView(view5);
 					tr.addView(viewEnd);
 
-					/* Add Separator */
-					View seperatorView = new View(this);
-					seperatorView.setLayoutParams(seperator);
-					seperatorView.setBackgroundColor(Color.DKGRAY);
+					/* Set Long Press Listener for row */
+					tr.setOnClickListener(new MyOnLongClickListener());
 
-					TableRow trInfo = new TableRow(this);
-					trInfo.setGravity(Gravity.CENTER);
+					/* TextView info row */
 					TextView viewInfo = new TextView(this);
 					viewInfo.setLayoutParams(infoLayout);
 					viewInfo.setGravity(Gravity.CENTER);
-
-					/* Add resistor info to row */
 					viewInfo.setText(resistValue + "\n" + color1 + " | " + color2 + " | " + color3 + " | " + color4);
 					if (subSets.length > 6 && color5 != null) {
 						viewInfo.setText(viewInfo.getText() + " | " + color5);
 					}
 					viewInfo.setTextColor(Color.BLACK);
 
+					/* TableRow info row */
+					TableRow trInfo = new TableRow(this);
+					trInfo.setGravity(Gravity.CENTER);
 					trInfo.addView(viewInfo);
 
-					/* Set Long Press Listener for row */
-					tr.setOnClickListener(new MyOnLongClickListener());
+					/* Add Separator */
+					View seperatorView = new View(this);
+					seperatorView.setLayoutParams(seperator);
+					seperatorView.setBackgroundColor(Color.DKGRAY);
 
 					/* Add the row to the table */
 					tl.setVisibility(View.INVISIBLE);
@@ -217,6 +225,7 @@ public class ListActivity extends Activity {
 					tl.addView(trInfo);
 					tl.addView(seperatorView);
 
+					/* Start Animation for whole row */
 					Animation anm = AnimationUtils.loadAnimation(ListActivity.this, android.R.anim.fade_in);
 					anm.setStartOffset(300);
 					tl.startAnimation(anm);
@@ -238,8 +247,7 @@ public class ListActivity extends Activity {
 				tv.setText("List is empty");
 				tv.setTextSize(20);
 
-				LayoutParams lp = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-						android.view.ViewGroup.LayoutParams.MATCH_PARENT);
+				LayoutParams lp = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT);
 				tv.setGravity(Gravity.CENTER);
 				tr.setGravity(Gravity.CENTER);
 				tr.addView(tv, lp);
@@ -267,8 +275,7 @@ public class ListActivity extends Activity {
 			tv.setText("SD Card not found");
 			tv.setTextSize(20);
 
-			LayoutParams lp = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-					android.view.ViewGroup.LayoutParams.MATCH_PARENT);
+			LayoutParams lp = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT);
 			tv.setGravity(Gravity.CENTER);
 			tr.setGravity(Gravity.CENTER);
 			tr.addView(tv, lp);
@@ -297,62 +304,62 @@ public class ListActivity extends Activity {
 
 		public void onClick(final View arg0) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
-			builder.setMessage("Are you sure you want to delete this resistor?").setCancelable(false)
-					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							try {
-								File dir = new File(Environment.getExternalStorageDirectory().getPath()
-										+ "/Android/data/com.dyang.fourband/files");
-								File file = new File(dir, "resistor_list.txt");
+			builder.setMessage("Are you sure you want to delete this resistor?").setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					try {
+						File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
+						File file = new File(dir, "resistor_list.txt");
 
-								StringBuilder text = new StringBuilder();
+						StringBuilder text = new StringBuilder();
 
-								boolean written = false;
+						boolean written = false;
 
-								BufferedReader br = new BufferedReader(new FileReader(file));
-								String line = null;
+						BufferedReader br = new BufferedReader(new FileReader(file));
+						String line = null;
 
-								while ((line = br.readLine()) != null) {
-									if (!line.trim().split(":")[0].equals(arg0.getTag().toString())) {
-										text.append(line + "\n");
-										written = true;
-									}
-								}
-
-								file.delete();
-
-								if (written) {
-									FileOutputStream fOut = new FileOutputStream(file);
-									String output = text.toString();
-									fOut.write(output.getBytes());
-								}
-
-								final Animation animation = AnimationUtils.loadAnimation(ListActivity.this,
-										android.R.anim.fade_out);
-								animation.setAnimationListener(new Animation.AnimationListener() {
-
-									public void onAnimationStart(Animation arg1) {
-									}
-
-									public void onAnimationRepeat(Animation arg2) {
-									}
-
-									public void onAnimationEnd(Animation arg3) {
-										loadTable();
-									}
-								});
-								tl.startAnimation(animation);
-							} catch (FileNotFoundException e) {
-								e.printStackTrace();
-							} catch (IOException e) {
-								e.printStackTrace();
+						while ((line = br.readLine()) != null) {
+							if (!line.trim().split(":")[0].equals(arg0.getTag().toString())) {
+								text.append(line + "\n");
+								written = true;
 							}
 						}
-					}).setNegativeButton("No", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.cancel();
+
+						br.close();
+
+						file.delete();
+
+						if (written) {
+							FileOutputStream fOut = new FileOutputStream(file);
+							String output = text.toString();
+							fOut.write(output.getBytes());
+							fOut.close();
 						}
-					});
+
+						final Animation animation = AnimationUtils.loadAnimation(ListActivity.this, android.R.anim.fade_out);
+						animation.setAnimationListener(new Animation.AnimationListener() {
+
+							public void onAnimationStart(Animation arg1) {
+							}
+
+							public void onAnimationRepeat(Animation arg2) {
+							}
+
+							public void onAnimationEnd(Animation arg3) {
+								loadTable();
+							}
+						});
+						tl.startAnimation(animation);
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}).setNegativeButton("No", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
 			AlertDialog alert = builder.create();
 			alert.show();
 		}

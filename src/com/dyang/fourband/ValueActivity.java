@@ -1,14 +1,10 @@
 package com.dyang.fourband;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import com.dyang.fourband.helper.FavouritesManager;
+import com.dyang.fourband.helper.ModeManager;
 import com.dyang.fourband.library.adapter.ToleranceAdapter;
 import com.dyang.fourband.library.adapter.UnitAdapter;
 import com.dyang.fourband.library.dm.ResultDm;
@@ -16,14 +12,12 @@ import com.dyang.fourband.library.dm.RowDm;
 import com.dyang.fourband.library.dm.SdDm;
 import com.dyang.fourband.library.dm.UnitDm;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -41,10 +35,9 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TableRow.LayoutParams;
 
-public class ValueActivity extends Activity implements OnClickListener {
+public class ValueActivity extends AbstractActivity implements OnClickListener {
 
 	private EditText valueText;
 	private Spinner valueUnit, valueTolerance;
@@ -59,6 +52,8 @@ public class ValueActivity extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.value);
+
+		ModeManager.updateMode(-1, this);
 
 		valueText = (EditText) findViewById(R.id.valueText);
 		valueUnit = (Spinner) findViewById(R.id.valueUnit);
@@ -167,11 +162,17 @@ public class ValueActivity extends Activity implements OnClickListener {
 			return;
 		}
 
-		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, getResources().getDisplayMetrics());
-		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
-		LayoutParams rowLayout = new LayoutParams(width, px);
-		rowLayout.leftMargin = width;
-		rowLayout.rightMargin = width;
+		// Define layout params
+		int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 86, getResources().getDisplayMetrics());
+		int px2 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 71, getResources().getDisplayMetrics());
+		int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+		int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 13, getResources().getDisplayMetrics());
+		LayoutParams rowLayout1 = new LayoutParams(width, px1);
+		LayoutParams rowLayout2 = new LayoutParams(width, px2);
+		rowLayout1.leftMargin = margin;
+		rowLayout1.rightMargin = margin;
+		rowLayout2.leftMargin = margin;
+		rowLayout2.rightMargin = margin;
 
 		LayoutParams infoLayout = new LayoutParams();
 		infoLayout.span = 6;
@@ -179,7 +180,7 @@ public class ValueActivity extends Activity implements OnClickListener {
 		LayoutParams preEndLayout = new LayoutParams(150, 100);
 
 		LayoutParams seperator = new LayoutParams();
-		seperator.height = 1;
+		seperator.height = 2;
 
 		TableLayout tl = (TableLayout) findViewById(R.id.resultTable);
 		tl.removeAllViews();
@@ -224,13 +225,13 @@ public class ValueActivity extends Activity implements OnClickListener {
 			TextView viewPre = new TextView(this);
 			viewPre.setLayoutParams(preEndLayout);
 			TextView view1 = new TextView(this);
-			view1.setLayoutParams(rowLayout);
+			view1.setLayoutParams(rowLayout1);
 			TextView view2 = new TextView(this);
-			view2.setLayoutParams(rowLayout);
+			view2.setLayoutParams(rowLayout2);
 			TextView view3 = new TextView(this);
-			view3.setLayoutParams(rowLayout);
+			view3.setLayoutParams(rowLayout2);
 			TextView view4 = new TextView(this);
-			view4.setLayoutParams(rowLayout);
+			view4.setLayoutParams(rowLayout1);
 			TextView viewEnd = new TextView(this);
 			viewEnd.setLayoutParams(preEndLayout);
 
@@ -263,7 +264,7 @@ public class ValueActivity extends Activity implements OnClickListener {
 				TableRow tr = new TableRow(this);
 				tr.setGravity(Gravity.CENTER);
 				tr.setBackgroundResource(R.drawable.resistor);
-				tr.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+				tr.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 
 				/* Add texts to row. */
 				tr.addView(viewPre);
@@ -288,7 +289,7 @@ public class ValueActivity extends Activity implements OnClickListener {
 				tl.addView(trInfo);
 			} else {
 				TextView viewNoResult = new TextView(this);
-				viewNoResult.setLayoutParams(rowLayout);
+				viewNoResult.setLayoutParams(rowLayout1);
 				viewNoResult.setText("No Result");
 				viewNoResult.setLayoutParams(new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 				// Declare new row
@@ -368,19 +369,20 @@ public class ValueActivity extends Activity implements OnClickListener {
 				TextView viewPre = new TextView(this);
 				viewPre.setLayoutParams(preEndLayout);
 				TextView view1 = new TextView(this);
-				view1.setLayoutParams(rowLayout);
+				view1.setLayoutParams(rowLayout1);
 				TextView view2 = new TextView(this);
-				view2.setLayoutParams(rowLayout);
+				view2.setLayoutParams(rowLayout2);
 				TextView view3 = new TextView(this);
-				view3.setLayoutParams(rowLayout);
+				view3.setLayoutParams(rowLayout2);
 				TextView view4 = new TextView(this);
-				view4.setLayoutParams(rowLayout);
+				view4.setLayoutParams(rowLayout1);
 				TextView viewEnd = new TextView(this);
 				viewEnd.setLayoutParams(preEndLayout);
 
 				TableRow tr = new TableRow(this);
 				tr.setGravity(Gravity.CENTER);
 				tr.setBackgroundResource(R.drawable.resistor);
+				tr.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
 				firstMatched = false;
 				secondMatched = false;
@@ -450,7 +452,7 @@ public class ValueActivity extends Activity implements OnClickListener {
 					/* Add Separator */
 					View seperatorView = new View(this);
 					seperatorView.setLayoutParams(seperator);
-					seperatorView.setBackgroundColor(Color.DKGRAY);
+					seperatorView.setBackgroundColor(Color.LTGRAY);
 
 					trInfo.addView(viewInfo);
 
@@ -474,13 +476,13 @@ public class ValueActivity extends Activity implements OnClickListener {
 				TextView viewPre = new TextView(this);
 				viewPre.setLayoutParams(preEndLayout);
 				TextView view1 = new TextView(this);
-				view1.setLayoutParams(rowLayout);
+				view1.setLayoutParams(rowLayout1);
 				TextView view2 = new TextView(this);
-				view2.setLayoutParams(rowLayout);
+				view2.setLayoutParams(rowLayout2);
 				TextView view3 = new TextView(this);
-				view3.setLayoutParams(rowLayout);
+				view3.setLayoutParams(rowLayout2);
 				TextView view4 = new TextView(this);
-				view4.setLayoutParams(rowLayout);
+				view4.setLayoutParams(rowLayout1);
 				TextView viewEnd = new TextView(this);
 				viewEnd.setLayoutParams(preEndLayout);
 
@@ -548,7 +550,7 @@ public class ValueActivity extends Activity implements OnClickListener {
 					/* Add Separator */
 					View seperatorView = new View(this);
 					seperatorView.setLayoutParams(seperator);
-					seperatorView.setBackgroundColor(Color.DKGRAY);
+					seperatorView.setBackgroundColor(Color.LTGRAY);
 
 					/* Add resistor info to row */
 					if (infoText[3].contains("("))
@@ -595,68 +597,9 @@ public class ValueActivity extends Activity implements OnClickListener {
 	public class MyOnLongClickListener implements OnLongClickListener {
 
 		public boolean onLongClick(View arg0) {
-
-			boolean mExternalStorageAvailable = false;
-			boolean mExternalStorageWriteable = false;
-			String state = Environment.getExternalStorageState();
-
-			if (Environment.MEDIA_MOUNTED.equals(state)) {
-				mExternalStorageAvailable = mExternalStorageWriteable = true;
-			} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-				mExternalStorageAvailable = true;
-				mExternalStorageWriteable = false;
-			} else {
-				mExternalStorageAvailable = mExternalStorageWriteable = false;
-			}
-
-			try {
-				if (mExternalStorageAvailable && mExternalStorageWriteable) {
-					File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
-					if (!dir.exists())
-						dir.mkdirs();
-
-					File file = new File(dir, "resistor_list.txt");
-					StringBuilder text = new StringBuilder();
-
-					int count = 0;
-
-					if (file.exists()) {
-						try {
-							BufferedReader br = new BufferedReader(new FileReader(file));
-							String line;
-							while ((line = br.readLine()) != null) {
-								count++;
-								text.append(line);
-								text.append('\n');
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-
-					FileOutputStream fOut = new FileOutputStream(file);
-					String output = text + Integer.toString(count) + ":" + ((SdDm) arg0.getTag()).getFirstBand() + ":" + ((SdDm) arg0.getTag()).getSecondBand() + ":"
-							+ ((SdDm) arg0.getTag()).getMultiplierBand() + ":" + ((SdDm) arg0.getTag()).getToleranceBand() + ":" + "Val" + ((SdDm) arg0.getTag()).getResistValue() + ";\n";
-					fOut.write(output.getBytes());
-
-					Context context = getApplicationContext();
-					CharSequence toastText = "Added to custom list";
-					int duration = Toast.LENGTH_SHORT;
-					Toast toast = Toast.makeText(context, toastText, duration);
-					toast.show();
-				} else {
-					Context context = getApplicationContext();
-					CharSequence toastText = "SD Card not found";
-					int duration = Toast.LENGTH_SHORT;
-					Toast toast = Toast.makeText(context, toastText, duration);
-					toast.show();
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
+			FavouritesManager.setFavourites(((SdDm) arg0.getTag()).getFirstBand(), ((SdDm) arg0.getTag()).getSecondBand(), ((SdDm) arg0.getTag()).getMultiplierBand(), null,
+					((SdDm) arg0.getTag()).getToleranceBand(), ((SdDm) arg0.getTag()).getResistValue(), ValueActivity.this);
+			return true;
 		}
 	}
 
@@ -697,53 +640,18 @@ public class ValueActivity extends Activity implements OnClickListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.mode5) {
-			updateMode("5", "update");
-		} else {
+			ModeManager.updateMode(5, ValueActivity.this);
+			Intent myIntent = new Intent(ValueActivity.this, ValueActivity5.class);
+			ValueActivity.this.startActivity(myIntent);
+			finish();
+			return true;
+		} else if (item.getItemId() == R.id.viewSavedList) {
 			Intent myIntent = new Intent(ValueActivity.this, ListActivity.class);
 			ValueActivity.this.startActivity(myIntent);
+			finish();
+			return true;
 		}
-		finish();
-		return true;
-	}
-
-	public void updateMode(String input, String action) {
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
-		}
-
-		if (mExternalStorageWriteable && mExternalStorageAvailable) {
-			File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.dyang.fourband/files");
-
-			if (!dir.exists())
-				dir.mkdirs();
-
-			File file = new File(dir, "mode.txt");
-
-			if (file.exists())
-				file.delete();
-
-			try {
-				FileOutputStream fOut = new FileOutputStream(file);
-				String output = input;
-				fOut.write(output.getBytes());
-
-				Intent myIntent = new Intent(ValueActivity.this, ValueActivity5.class);
-				ValueActivity.this.startActivity(myIntent);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		return super.onOptionsItemSelected(item);
 	}
 
 }

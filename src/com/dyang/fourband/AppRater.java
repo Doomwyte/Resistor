@@ -7,15 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 public class AppRater {
 	private static String APP_TITLE;
@@ -62,29 +53,28 @@ public class AppRater {
 
 	public static void showRateDialog(final Context mContext, final SharedPreferences.Editor editor) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-		builder.setMessage("If " + APP_TITLE + " has helped you in any way, please take a moment to rate it. Thanks for your support!")
-				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						if (editor != null) {
-							editor.putBoolean("dontshowagain", true);
-							editor.commit();
-						}
-						mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + APP_PNAME)));
-						dialog.dismiss();
-					}
-				}).setNeutralButton("Remind Me", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface arg0, int arg1) {
-						dialog.dismiss();
-					}
-				}).setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						if (editor != null) {
-							editor.putBoolean("dontshowagain", true);
-							editor.commit();
-						}
-						dialog.dismiss();
-					}
-				});
+		builder.setMessage("If " + APP_TITLE + " has helped you in any way, please take a moment to rate it. Thanks for your support!").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				if (editor != null) {
+					editor.putBoolean("dontshowagain", true);
+					editor.commit();
+				}
+				mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + APP_PNAME)));
+				dialog.dismiss();
+			}
+		}).setNeutralButton("Remind Me", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				dialog.dismiss();
+			}
+		}).setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				if (editor != null) {
+					editor.putBoolean("dontshowagain", true);
+					editor.commit();
+				}
+				dialog.dismiss();
+			}
+		});
 		// Create the AlertDialog object and return it
 		dialog = builder.create();
 		dialog.show();

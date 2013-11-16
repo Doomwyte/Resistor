@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/viewCustomList" android:title="@string/viewCustomList"
+	<item android:id="@+id/viewSavedList" android:title="@string/savedList"
 		android:icon="@drawable/list_icon"></item>
 	<item android:id="@+id/mode5" android:title="@string/fiveBandMode"></item>
 </menu>

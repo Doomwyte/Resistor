@@ -20,8 +20,11 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/modeText"
-        android:gravity="center_horizontal"
-        android:padding="20dip" >
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal" >
+
         <ListView
             android:id="@+id/mainlist1"
             android:layout_width="fill_parent"
