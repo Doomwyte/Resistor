@@ -2,9 +2,7 @@ package com.dyang.fourband;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -53,8 +51,6 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 	private ArrayList<RowDm> firstBand, secondBand, thirdBand, multiplierBand, toleranceBand;
 	private ArrayList<UnitDm> units;
 	private ArrayList<ResultDm> low_queue, high_queue;
-	private TextView viewPre, view1, view2, view3, view4, view5, viewEnd, viewInfo;
-	private TableRow trInfo;
 	private LayoutParams rowLayout1, rowLayout2, rowLayout3, infoLayout, preEndLayout, seperator;
 	private TableLayout tl;
 	private ProgressDialog progress;
@@ -236,23 +232,23 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 			}
 
 			/* Create a textview to be the row-content */
-			viewPre = new TextView(this);
+			TextView viewPre = new TextView(this);
 			viewPre.setLayoutParams(preEndLayout);
-			view1 = new TextView(this);
+			TextView view1 = new TextView(this);
 			view1.setLayoutParams(rowLayout1);
-			view2 = new TextView(this);
+			TextView view2 = new TextView(this);
 			view2.setLayoutParams(rowLayout2);
-			view3 = new TextView(this);
+			TextView view3 = new TextView(this);
 			view3.setLayoutParams(rowLayout3);
-			view4 = new TextView(this);
+			TextView view4 = new TextView(this);
 			view4.setLayoutParams(rowLayout2);
-			view5 = new TextView(this);
+			TextView view5 = new TextView(this);
 			view5.setLayoutParams(rowLayout1);
-			viewEnd = new TextView(this);
+			TextView viewEnd = new TextView(this);
 			viewEnd.setLayoutParams(preEndLayout);
-			trInfo = new TableRow(this);
+			TableRow trInfo = new TableRow(this);
 			trInfo.setGravity(Gravity.CENTER);
-			viewInfo = new TextView(this);
+			TextView viewInfo = new TextView(this);
 			viewInfo.setLayoutParams(infoLayout);
 			viewInfo.setGravity(Gravity.CENTER);
 
@@ -425,10 +421,6 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 									return null;
 								}
 
-								TableRow tr = new TableRow(ValueActivity5.this);
-								tr.setGravity(Gravity.CENTER);
-								tr.setBackgroundResource(R.drawable.resistor);
-
 								TableRow trInfo = new TableRow(ValueActivity5.this);
 								trInfo.setGravity(Gravity.CENTER);
 
@@ -450,6 +442,10 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 								TextView viewInfo = new TextView(ValueActivity5.this);
 								viewInfo.setLayoutParams(infoLayout);
 								viewInfo.setGravity(Gravity.CENTER);
+
+								TableRow tr = new TableRow(ValueActivity5.this);
+								tr.setGravity(Gravity.CENTER);
+								tr.setBackgroundResource(R.drawable.resistor);
 
 								Boolean firstMatched = false;
 								Boolean secondMatched = false;
@@ -515,22 +511,23 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 									tr.addView(view5);
 									tr.addView(viewEnd);
 
-									/* Add Separator */
-									View seperatorView = new View(ValueActivity5.this);
-									seperatorView.setLayoutParams(seperator);
-									seperatorView.setBackgroundColor(Color.LTGRAY);
-
 									/* Add resistor info to row */
 									if (infoText[4].contains("("))
 										infoText[4] = infoText[4].substring(0, infoText[4].indexOf("(") - 1);
 									UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
 									Double resistValue = low_queue.get(i).getResisVal() / selectedUnit.getMultiple();
 									resistValue = adjustDouble(resistValue, 3);
-									if (resistValue.equals(-1.0))
-										return null;
+									if (resistValue.equals(-1.0)) {
+										continue;
+									}
 									viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | "
 											+ infoText[4]);
 									viewInfo.setTextColor(Color.BLACK);
+
+									/* Add Separator */
+									View seperatorView = new View(ValueActivity5.this);
+									seperatorView.setLayoutParams(seperator);
+									seperatorView.setBackgroundColor(Color.LTGRAY);
 
 									trInfo.addView(viewInfo);
 
@@ -541,10 +538,8 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 									localTr.add(tr);
 									localTr.add(trInfo);
 									localTr.add(seperatorView);
-
 								}
 							}
-
 							return localTr;
 						}
 					};
@@ -661,8 +656,9 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 									UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
 									Double resistValue = high_queue.get(i).getResisVal() / selectedUnit.getMultiple();
 									resistValue = adjustDouble(resistValue, 3);
-									if (resistValue.equals(-1.0))
-										return null;
+									if (resistValue.equals(-1.0)) {
+										continue;
+									}
 									viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3] + " | "
 											+ infoText[4]);
 									viewInfo.setTextColor(Color.BLACK);
@@ -684,37 +680,35 @@ public class ValueActivity5 extends AbstractActivity implements OnClickListener 
 						}
 					};
 
-					ExecutorService executorService = Executors.newFixedThreadPool(2);
+					List<Future<List<View>>> futureList = new ArrayList<Future<List<View>>>();
+					ExecutorService executorService = Executors.newCachedThreadPool();
 					Future<List<View>> lowFuture = executorService.submit(lowCallable);
+					futureList.add(lowFuture);
 					Future<List<View>> highFuture = executorService.submit(highCallable);
+					futureList.add(highFuture);
 
-					Set<Future<List<View>>> set = new HashSet<Future<List<View>>>();
-					set.add(highFuture);
-					set.add(lowFuture);
-					for (Future<List<View>> future : set) {
+					views = new ArrayList<View>();
+					for (Future<List<View>> future : futureList) {
 						try {
-							views = future.get();
-							if (views == null) {
+							List<View> viewList = future.get();
+							if (viewList == null) {
 								continue;
 							}
+							views.addAll(viewList);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						} catch (ExecutionException e) {
 							e.printStackTrace();
 						}
-
-						ValueActivity5.this.runOnUiThread(new Runnable() {
-							public void run() {
-								tl.removeAllViews();
-								for (View view : views) {
-									tl.addView(view);
-								}
-							}
-						});
 					}
 
 					ValueActivity5.this.runOnUiThread(new Runnable() {
 						public void run() {
+							for (View view : views) {
+								synchronized (tl) {
+									tl.addView(view);
+								}
+							}
 							if (stopThreads) {
 								displayMessage("Operation Cancelled");
 								stopThreads = false;

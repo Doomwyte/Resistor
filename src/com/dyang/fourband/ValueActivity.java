@@ -2,9 +2,7 @@ package com.dyang.fourband;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -53,14 +51,10 @@ public class ValueActivity extends AbstractActivity implements OnClickListener {
 	private ArrayList<RowDm> firstBand, secondBand, thirdBand, toleranceBand;
 	private ArrayList<UnitDm> units;
 	private ArrayList<ResultDm> low_queue, high_queue;
-	private boolean firstMatched, secondMatched, thirdMatched, fourthMatched = false;
-	private String[] infoText;
-	private TableRow trInfo;
 	private LayoutParams rowLayout1, rowLayout2, infoLayout, preEndLayout, seperator;
-	private TextView viewPre, view1, view2, view3, view4, viewEnd, viewInfo;
+	private TableLayout tl;
 	private ProgressDialog progress;
 	private List<View> views;
-	private TableLayout tl;
 	private Boolean stopThreads = false;
 
 	/** Called when the activity is first created. */
@@ -231,30 +225,30 @@ public class ValueActivity extends AbstractActivity implements OnClickListener {
 				return;
 			}
 
-			trInfo = new TableRow(this);
+			TableRow trInfo = new TableRow(this);
 			trInfo.setGravity(Gravity.CENTER);
-			viewInfo = new TextView(this);
+			TextView viewInfo = new TextView(this);
 			viewInfo.setLayoutParams(infoLayout);
 			viewInfo.setGravity(Gravity.CENTER);
 
 			/* Create a textview to be the row-content */
-			viewPre = new TextView(this);
+			TextView viewPre = new TextView(this);
 			viewPre.setLayoutParams(preEndLayout);
-			view1 = new TextView(this);
+			TextView view1 = new TextView(this);
 			view1.setLayoutParams(rowLayout1);
-			view2 = new TextView(this);
+			TextView view2 = new TextView(this);
 			view2.setLayoutParams(rowLayout2);
-			view3 = new TextView(this);
+			TextView view3 = new TextView(this);
 			view3.setLayoutParams(rowLayout2);
-			view4 = new TextView(this);
+			TextView view4 = new TextView(this);
 			view4.setLayoutParams(rowLayout1);
-			viewEnd = new TextView(this);
+			TextView viewEnd = new TextView(this);
 			viewEnd.setLayoutParams(preEndLayout);
 
-			firstMatched = false;
-			secondMatched = false;
-			thirdMatched = false;
-			infoText = new String[3];
+			Boolean firstMatched = false;
+			Boolean secondMatched = false;
+			Boolean thirdMatched = false;
+			String[] infoText = new String[3];
 
 			for (int i = 0; i < 12; i++) {
 				if (firstBand.size() > i && !firstMatched && firstDigit == firstBand.get(i).getResisInt()) {
@@ -318,9 +312,12 @@ public class ValueActivity extends AbstractActivity implements OnClickListener {
 			// As low as possible
 			low_queue = new ArrayList<ResultDm>();
 			boolean low_end = false;
+
+			// backup
 			double powOfTensBak = powOfTens;
 			int firstDigitBak = firstDigit;
 			int secondDigitBak = secondDigit;
+
 			while (!low_end) {
 				if (secondDigit == -1) {
 					secondDigit = 9;
@@ -400,9 +397,6 @@ public class ValueActivity extends AbstractActivity implements OnClickListener {
 
 								TableRow trInfo = new TableRow(ValueActivity.this);
 								trInfo.setGravity(Gravity.CENTER);
-								TextView viewInfo = new TextView(ValueActivity.this);
-								viewInfo.setLayoutParams(infoLayout);
-								viewInfo.setGravity(Gravity.CENTER);
 
 								/* Create a textview to be the row-content */
 								TextView viewPre = new TextView(ValueActivity.this);
@@ -417,17 +411,19 @@ public class ValueActivity extends AbstractActivity implements OnClickListener {
 								view4.setLayoutParams(rowLayout1);
 								TextView viewEnd = new TextView(ValueActivity.this);
 								viewEnd.setLayoutParams(preEndLayout);
+								TextView viewInfo = new TextView(ValueActivity.this);
+								viewInfo.setLayoutParams(infoLayout);
+								viewInfo.setGravity(Gravity.CENTER);
 
 								TableRow tr = new TableRow(ValueActivity.this);
 								tr.setGravity(Gravity.CENTER);
 								tr.setBackgroundResource(R.drawable.resistor);
-								tr.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-								firstMatched = false;
-								secondMatched = false;
-								thirdMatched = false;
-								fourthMatched = false;
-								infoText = new String[4];
+								Boolean firstMatched = false;
+								Boolean secondMatched = false;
+								Boolean thirdMatched = false;
+								Boolean fourthMatched = false;
+								String[] infoText = new String[4];
 
 								for (int match = 0; match < 12; match++) {
 									if (firstBand.size() > match) {
@@ -483,8 +479,9 @@ public class ValueActivity extends AbstractActivity implements OnClickListener {
 									UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
 									Double resistValue = low_queue.get(i).getResisVal() / selectedUnit.getMultiple();
 									resistValue = adjustDouble(resistValue, 3);
-									if (resistValue.equals(-1.0))
-										return null;
+									if (resistValue.equals(-1.0)) {
+										continue;
+									}
 									viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3]);
 									viewInfo.setTextColor(Color.BLACK);
 
@@ -544,11 +541,11 @@ public class ValueActivity extends AbstractActivity implements OnClickListener {
 								TableRow trInfo = new TableRow(ValueActivity.this);
 								trInfo.setGravity(Gravity.CENTER);
 
-								firstMatched = false;
-								secondMatched = false;
-								thirdMatched = false;
-								fourthMatched = false;
-								infoText = new String[4];
+								Boolean firstMatched = false;
+								Boolean secondMatched = false;
+								Boolean thirdMatched = false;
+								Boolean fourthMatched = false;
+								String[] infoText = new String[4];
 
 								for (int match = 0; match < 12; match++) {
 									if (firstBand.size() > match) {
@@ -609,8 +606,9 @@ public class ValueActivity extends AbstractActivity implements OnClickListener {
 									UnitDm selectedUnit = (UnitDm) valueUnit.getSelectedItem();
 									Double resistValue = high_queue.get(i).getResisVal() / selectedUnit.getMultiple();
 									resistValue = adjustDouble(resistValue, 3);
-									if (resistValue.equals(-1.0))
-										return null;
+									if (resistValue.equals(-1.0)) {
+										continue;
+									}
 									viewInfo.setText(resistValue + " " + selectedUnit.getLabel() + "\n" + infoText[0] + " | " + infoText[1] + " | " + infoText[2] + " | " + infoText[3]);
 									viewInfo.setTextColor(Color.BLACK);
 
@@ -629,34 +627,35 @@ public class ValueActivity extends AbstractActivity implements OnClickListener {
 						}
 					};
 
-					ExecutorService executorService = Executors.newFixedThreadPool(2);
+					List<Future<List<View>>> futureList = new ArrayList<Future<List<View>>>();
+					ExecutorService executorService = Executors.newCachedThreadPool();
 					Future<List<View>> lowFuture = executorService.submit(lowCallable);
+					futureList.add(lowFuture);
 					Future<List<View>> highFuture = executorService.submit(highCallable);
+					futureList.add(highFuture);
 
-					Set<Future<List<View>>> set = new HashSet<Future<List<View>>>();
-					set.add(highFuture);
-					set.add(lowFuture);
-					for (Future<List<View>> future : set) {
+					views = new ArrayList<View>();
+					for (Future<List<View>> future : futureList) {
 						try {
-							views = future.get();
+							List<View> viewList = future.get();
+							if (viewList == null) {
+								continue;
+							}
+							views.addAll(viewList);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						} catch (ExecutionException e) {
 							e.printStackTrace();
 						}
-
-						ValueActivity.this.runOnUiThread(new Runnable() {
-							public void run() {
-								tl.removeAllViews();
-								for (View view : views) {
-									tl.addView(view);
-								}
-							}
-						});
 					}
 
 					ValueActivity.this.runOnUiThread(new Runnable() {
 						public void run() {
+							for (View view : views) {
+								synchronized (tl) {
+									tl.addView(view);
+								}
+							}
 							if (stopThreads) {
 								displayMessage("Operation Cancelled");
 								stopThreads = false;
