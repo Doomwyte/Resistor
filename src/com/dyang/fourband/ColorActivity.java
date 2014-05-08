@@ -32,9 +32,7 @@ import android.widget.TextView;
 public class ColorActivity extends AbstractActivity {
 
 	private Spinner firstSpinner, secondSpinner, thirdSpinner, toleranceSpinner, unitSpinner, decimalSpinner;
-
 	private TextView resultText, toleranceText, minmaxText;
-
 	private TableRow colorImage;
 
 	@Override
@@ -182,20 +180,23 @@ public class ColorActivity extends AbstractActivity {
 
 		/* Create a textview to be the row-content */
 		TextView view1 = new TextView(this);
-		view1.setLayoutParams(rowLayout_1);
 		TextView view2 = new TextView(this);
-		view2.setLayoutParams(rowLayout_2);
 		TextView view3 = new TextView(this);
-		view3.setLayoutParams(rowLayout_2);
 		TextView view4 = new TextView(this);
+
+		/* Apply row layout params to each column */
+		view1.setLayoutParams(rowLayout_1);
+		view2.setLayoutParams(rowLayout_2);
+		view3.setLayoutParams(rowLayout_2);
 		view4.setLayoutParams(rowLayout_1);
 
+		// Set color of each spinner
 		view1.setBackgroundResource(((RowDm) firstSpinner.getSelectedItem()).getColorInt());
 		view2.setBackgroundResource(((RowDm) secondSpinner.getSelectedItem()).getColorInt());
 		view3.setBackgroundResource(((RowDm) thirdSpinner.getSelectedItem()).getColorInt());
 		view4.setBackgroundResource(((RowDm) toleranceSpinner.getSelectedItem()).getColorInt());
 
-		/* Add texts to row. */
+		// Add texts to row.
 		colorImage.setGravity(Gravity.CENTER);
 		colorImage.addView(view1);
 		colorImage.addView(view2);
