@@ -30,10 +30,6 @@
             android:label="@string/findByColor" >
         </activity>
         <activity
-            android:name=".ColorActivity5"
-            android:label="@string/findByColor" >
-        </activity>
-        <activity
             android:name=".ValueActivity"
             android:label="@string/findByValue" >
         </activity>

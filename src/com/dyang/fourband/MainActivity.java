@@ -41,17 +41,13 @@ public class MainActivity extends ActionBarActivity {
 		listView.setAdapter(new MenuAdapter(this, R.layout.main, mainMenu));
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if (arg2 == 0 && ModeManager.mode == 4) {
+				if (arg2 == 0) {
 					Intent myIntent = new Intent(MainActivity.this, ColorActivity.class);
 					startActivity(myIntent);
-				}
-				if (arg2 == 0 && ModeManager.mode == 5) {
-					Intent myIntent = new Intent(MainActivity.this, ColorActivity5.class);
-					startActivity(myIntent);
-				} else if (arg2 == 1 && ModeManager.mode == 4) {
+				} else if (arg2 == 1 && ModeManager.getMode() == 4) {
 					Intent myIntent = new Intent(MainActivity.this, ValueActivity.class);
 					startActivity(myIntent);
-				} else if (arg2 == 1 && ModeManager.mode == 5) {
+				} else if (arg2 == 1 && ModeManager.getMode() == 5) {
 					Intent myIntent = new Intent(MainActivity.this, ValueActivity5.class);
 					startActivity(myIntent);
 				} else if (arg2 == 2) {

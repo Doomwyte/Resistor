@@ -2,10 +2,8 @@ package com.dyang.fourband.helper;
 
 import com.dyang.fourband.AbstractActivity;
 import com.dyang.fourband.ColorActivity;
-import com.dyang.fourband.ColorActivity5;
 import com.dyang.fourband.R;
 import com.dyang.fourband.ValueActivity;
-import com.dyang.fourband.ValueActivity5;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,10 +15,14 @@ import android.widget.TextView;
 
 public class ModeManager extends AbstractActivity {
 
-	public static int mode;
+	private static int mode;
 	private static TextView modeText;
 	private static Activity mActivity;
 
+	public static int getMode() {
+		return mode;
+	}
+	
 	public static void updateMode(int modeToApply, Activity activity) {
 		mActivity = activity;
 
@@ -38,27 +40,28 @@ public class ModeManager extends AbstractActivity {
 		modeText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Intent myIntent = null;
+				
+				// Set mode
 				if (mode == 4) {
 					updateMode(5, mActivity);
-					if (mActivity instanceof ColorActivity) {
-						myIntent = new Intent(mActivity, ColorActivity5.class);
-					} else if (mActivity instanceof ValueActivity) {
-						myIntent = new Intent(mActivity, ValueActivity5.class);
-					}
 				} else {
 					updateMode(4, mActivity);
-					if (mActivity instanceof ColorActivity5) {
-						myIntent = new Intent(mActivity, ColorActivity.class);
-
-					} else if (mActivity instanceof ValueActivity5) {
-						myIntent = new Intent(mActivity, ValueActivity.class);
-					}
 				}
+				
+				// Get intent
+				Intent myIntent = null;
+				if (mActivity instanceof ColorActivity) {
+					myIntent = new Intent(mActivity, ColorActivity.class);
+				} else if (mActivity instanceof ValueActivity) {
+					myIntent = new Intent(mActivity, ValueActivity.class);
+				}
+				
+				// Start intent
 				if (myIntent != null) {
 					mActivity.startActivity(myIntent);
 					mActivity.finish();
 				}
+				
 			}
 		});
 		setModeText();
