@@ -1,6 +1,6 @@
 <h2>Resistor Tool</h2>
 
-Resistor Tool is an app for finding resistance values and band colors of 4 band and 5 band resistors.
+Resistor Tool is an app for finding resistance values and band colors for 4 band and 5 band resistors.
 
 <h3>Usage</h3>
 
